@@ -10692,3 +10692,72 @@ body:has(.wktcApp){background:#f7ede1 !important}
 .wktcApp .mobileHomeLogo,.wktcApp .mockHomeMobileBrand{background:#fff9ef !important;border-color:#dfbd97 !important}
 .wktcApp .mobileHomeLogo img,.wktcApp .mockHomeMobileBrand img{object-fit:contain !important;background:#fff9ef !important}
 .wktcApp .mockFooterStrip{background:linear-gradient(120deg,#71300d 0%,#26140d 100%) !important;border-color:#71300d !important}
+
+
+/* =========================================================
+   WKTC V11.61 — DESKTOP IMAGE / HEADER FIX
+   Mobile layout is intentionally unchanged.
+   ========================================================= */
+@media(min-width:721px){
+  /* The inherited desktop header expected a wide horizontal logo.
+     WKTC uses a tall crest, so remove the oversized empty brand pill. */
+  .wktcApp .sidebar{
+    grid-template-columns:92px minmax(0,1fr) 150px !important;
+    gap:18px !important;
+    padding-left:24px !important;
+    padding-right:24px !important;
+  }
+
+  .wktcApp .brand{
+    width:72px !important;
+    height:82px !important;
+    min-width:72px !important;
+    margin:0 !important;
+    padding:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    overflow:hidden !important;
+    background:transparent !important;
+    border:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+  }
+
+  .wktcApp .brand img{
+    width:68px !important;
+    height:82px !important;
+    max-width:none !important;
+    margin:0 !important;
+    object-fit:contain !important;
+    object-position:center !important;
+    background:transparent !important;
+    transform:scale(1.12);
+    transform-origin:center;
+  }
+
+  .wktcApp .navList{
+    gap:18px !important;
+  }
+
+  /* The original desktop home used open-court-hero.png as a CSS background.
+     That image does not belong to WKTC. Use the actual WKTC crest instead. */
+  .wktcApp .mockHeroImage{
+    background-color:#26140d !important;
+    background-image:url('/wktc-logo.png') !important;
+    background-repeat:no-repeat !important;
+    background-position:center center !important;
+    background-size:auto 138% !important;
+  }
+
+  /* No <img> is required inside this panel; if one is ever present,
+     keep it from stretching/cropping incorrectly. */
+  .wktcApp .mockHeroImage img{
+    width:100% !important;
+    height:100% !important;
+    object-fit:contain !important;
+    object-position:center !important;
+    padding:10px !important;
+    background:transparent !important;
+  }
+}
