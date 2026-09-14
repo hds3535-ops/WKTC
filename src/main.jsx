@@ -3009,7 +3009,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
   return <div className="app wktcApp">
     <aside className="sidebar">
       <button className="brand" onClick={()=>navigateFresh("home")} aria-label="대시보드로 이동">
-        <img src="/wktc-logo.jpg" alt="WKTC - Wellington Korean Tennis Club"/>
+        <img src="/wktc-logo.png" alt="WKTC - Wellington Korean Tennis Club"/>
       </button>
       <div className="mobileTopRightQuickGroup">
         <button className="mobileMenuButton" aria-label="메뉴 열기" aria-expanded={mobileMenuOpen} onClick={()=>setMobileMenuOpen(v=>!v)}>
@@ -3074,7 +3074,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
     <main className="main">
       {tab!=="home"&&<div className="mobileTopBar">
         <button className="mobileHomeLogo" onClick={()=>navigateFresh("home")} aria-label="홈으로 이동">
-          <img src="/wktc-logo.jpg" alt="WKTC"/>
+          <img src="/wktc-logo.png" alt="WKTC"/>
         </button>
         <b className="mobilePageTitle">{title}</b>
       </div>}
@@ -3089,8 +3089,8 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
 
       {tab==="home"&&<>
         <div className="mockHomeMobileBrand">
-          <img src="/wktc-logo.jpg" alt="WKTC"/>
-          <span><b>WKTC</b><small>VICTORIA KOREAN TENNIS CLUB</small></span>
+          <img src="/wktc-logo.png" alt="WKTC"/>
+          <span><b>WKTC</b><small>WELLINGTON KOREAN TENNIS CLUB</small></span>
         </div>
 
         <div className="mockHome">
@@ -3105,7 +3105,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
 
               </div>
               <div className="mockHeroImage" aria-hidden="true">
-                <img src="/wktc-logo.jpg" alt=""/>
+                <img src="/wktc-logo.png" alt=""/>
               </div>
             </article>
 
@@ -3215,7 +3215,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
             <div className="mockMedal">♕</div>
             <div className="mockFooterIntro">
               <b>Wellington Korean Tennis Club</b>
-              <small>빅토리아 한인 테니스 커뮤니티 WKTC.<br/>실력과 관계없이 함께 즐기고 성장하는 클럽을 만들어갑니다.</small>
+              <small>웰링턴 한인 테니스 커뮤니티 WKTC.<br/>실력과 관계없이 함께 즐기고 성장하는 클럽을 만들어갑니다.</small>
             </div>
             <div className="mockFooterPoint"><span>♙</span><div><b>모두 환영해요</b><small>누구나 참여 가능</small></div></div>
             <div className="mockFooterPoint"><span>▣</span><div><b>회원제 운영</b><small>정회원 · 준회원</small></div></div>
@@ -3983,7 +3983,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
             <b>점수 명칭</b><p>OTR 2.0 (Open Tennis Rating)</p>
 
             <b>회원 개인 PIN</b>
-            <p>회원 PIN은 클럽별로 따로 저장되고 인증됩니다. WKTC의 정회원 또는 준회원에게는 WKTC용 숫자 4자리 PIN을 설정하세요. 같은 선수가 OPEN COURT나 다른 클럽에서도 같은 번호를 원하면 같은 PIN을 사용할 수 있습니다. 다만 같은 클럽 안에서는 두 회원이 같은 PIN을 사용할 수 없습니다. WKTC PIN으로는 WKTC의 대진 생성 · 경기 결과 입력 · 회계 열람 · MY PAGE만 인증됩니다.</p>
+            <p>회원 PIN은 클럽별로 따로 저장되고 인증됩니다. WKTC의 정회원 또는 준회원에게는 WKTC용 숫자 4자리 PIN을 설정하세요. 같은 선수가 OPEN COURT나 다른 클럽에서도 같은 번호를 원하면 같은 PIN을 사용할 수 있습니다. 다만 같은 클럽 안에서는 두 회원이 같은 PIN을 사용할 수 없습니다. WKTC PIN으로는 WKTC의 대진 생성 · 경기 결과 입력 · MY PAGE를 인증합니다.</p>
           </div>
         </section>
 
@@ -4038,7 +4038,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
           <div className="sectionHead">
             <div>
               <h2>공용 OTR · WKTC 독립 운영</h2>
-              <small>V11.52 WKTC Launch</small>
+              <small>V11.59 WKTC</small>
             </div>
             <span className="multiClubReadyBadge">{clubFoundationError?"확인 필요":isAdmin?"SECURED":"READY"}</span>
           </div>
@@ -4061,7 +4061,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
               <div className="multiClubFoundationNote">
                 <b>이번 단계에서 완료된 것</b>
                 <p><b>관리자 권한:</b> Insunryu7399@gmail.com 계정을 WKTC 관리자 초대로 등록했습니다. 해당 Supabase Auth 계정으로 로그인하면 WKTC 관리자 권한이 연결됩니다.</p>
-                <p><b>WKTC 전용 영역:</b> 경기 · 회계 · 행사 · 회원소속은 WKTC Club ID로 분리됩니다. 별도 스케줄 배치 시스템은 사용하지 않고 예정된 게임 목록만 사용합니다. 시즌대회 · OPEN PICK · 명예의 전당은 사용하지 않습니다.</p>
+                <p><b>WKTC 전용 영역:</b> 경기 · 행사 · 회원소속은 WKTC Club ID로 분리됩니다. 별도 스케줄 배치 시스템은 사용하지 않고 예정된 게임 목록만 사용합니다. 시즌대회 · OPEN PICK · 명예의 전당은 사용하지 않습니다.</p>
                 <p><b>회계 기능:</b> WKTC에서는 회계 메뉴와 회비/게스트비 기록 기능을 사용하지 않습니다.</p>
               </div>
             </>}

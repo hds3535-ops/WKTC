@@ -10015,43 +10015,43 @@ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR
 
 
 /* =========================================================
-   V11.44 — VKTC Site
+   V11.44 — WKTC Site
    ========================================================= */
-.vktcApp{
-  --vktc-green:#009b4a;
-  --vktc-dark:#231918;
+.wktcApp{
+  --wktc-green:#b65f1a;
+  --wktc-dark:#231918;
 }
-.vktcApp .brand img,
-.vktcApp .mobileHomeLogo img,
-.vktcApp .mockHomeMobileBrand img{
+.wktcApp .brand img,
+.wktcApp .mobileHomeLogo img,
+.wktcApp .mockHomeMobileBrand img{
   object-fit:contain;
   background:#fff;
 }
-.vktcApp .nav.active,
-.vktcApp .primary,
-.vktcApp .mobileMenuItem.active{
-  background:#009b4a;
-  border-color:#009b4a;
+.wktcApp .nav.active,
+.wktcApp .primary,
+.wktcApp .mobileMenuItem.active{
+  background:#b65f1a;
+  border-color:#b65f1a;
 }
-.vktcApp .nameLink,
-.vktcApp .mockCardHead button,
-.vktcApp .rankingMoreBtn{
-  color:#008b43;
+.wktcApp .nameLink,
+.wktcApp .mockCardHead button,
+.wktcApp .rankingMoreBtn{
+  color:#a14b15;
 }
-.vktcApp .mockHeroImage{
+.wktcApp .mockHeroImage{
   background:#fff;
 }
-.vktcApp .mockHeroImage img{
+.wktcApp .mockHeroImage img{
   object-fit:contain;
   padding:22px;
   background:#fff;
 }
-.vktcApp .mockEyebrow,
-.vktcApp .mockRankRows b,
-.vktcApp .multiClubReadyBadge{
-  color:#008b43;
+.wktcApp .mockEyebrow,
+.wktcApp .mockRankRows b,
+.wktcApp .multiClubReadyBadge{
+  color:#a14b15;
 }
-.vktcHomeRankOnly{
+.wktcHomeRankOnly{
   min-height:100%;
 }
 .globalPlayerImportPanel{
@@ -10121,16 +10121,16 @@ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR
   color:#777;
   font-size:10px;
 }
-.vktcFinanceAdminGrid{
+.wktcFinanceAdminGrid{
   grid-template-columns:repeat(3,minmax(0,1fr));
 }
-.vktcMonthlyFeeForm p{
+.wktcMonthlyFeeForm p{
   margin:0;
   color:#757575;
   font-size:10px;
   line-height:1.55;
 }
-.vktcFeeRule{
+.wktcFeeRule{
   display:flex;
   align-items:baseline;
   gap:8px;
@@ -10139,43 +10139,43 @@ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR
   border-radius:12px;
   background:#f5fbf7;
 }
-.vktcFeeRule b{
+.wktcFeeRule b{
   font-size:22px;
-  color:#008b43;
+  color:#a14b15;
 }
-.vktcFeeRule span{
+.wktcFeeRule span{
   font-size:10px;
   color:#666;
 }
-.vktcGuestFixedFee{
+.wktcGuestFixedFee{
   font-weight:950;
-  color:#008b43;
+  color:#a14b15;
 }
 @media(max-width:1100px){
-  .vktcFinanceAdminGrid{grid-template-columns:1fr 1fr}
+  .wktcFinanceAdminGrid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:760px){
   .globalPlayerResultRow{align-items:flex-start;flex-direction:column}
   .globalPlayerActions{justify-content:flex-start;width:100%}
-  .vktcFinanceAdminGrid{grid-template-columns:1fr}
+  .wktcFinanceAdminGrid{grid-template-columns:1fr}
 }
 
 
 /* =========================================================
-   V11.45 — VKTC Upcoming Games (no schedule board)
+   V11.45 — WKTC Upcoming Games (no schedule board)
    ========================================================= */
-.vktcUpcomingHomeCard{
+.wktcUpcomingHomeCard{
   display:flex;
   flex-direction:column;
   min-height:100%;
 }
-.vktcUpcomingHomeList{
+.wktcUpcomingHomeList{
   display:grid;
   gap:8px;
   margin:10px 0 12px;
   flex:1;
 }
-.vktcUpcomingHomeRow{
+.wktcUpcomingHomeRow{
   width:100%;
   display:grid;
   grid-template-columns:70px minmax(0,1fr) auto;
@@ -10188,443 +10188,443 @@ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR
   border-radius:12px;
   color:inherit;
 }
-.vktcUpcomingHomeRow:hover{
+.wktcUpcomingHomeRow:hover{
   border-color:#b9d8c5;
   background:#f6fbf8;
 }
-.vktcUpcomingDate{
+.wktcUpcomingDate{
   display:grid;
   gap:1px;
 }
-.vktcUpcomingDate b{
+.wktcUpcomingDate b{
   font-size:12px;
-  color:#008b43;
+  color:#a14b15;
 }
-.vktcUpcomingDate small{
+.wktcUpcomingDate small{
   font-size:10px;
   color:#777;
 }
-.vktcUpcomingTeams{
+.wktcUpcomingTeams{
   display:flex;
   align-items:center;
   gap:7px;
   min-width:0;
   font-size:11px;
 }
-.vktcUpcomingTeams b{
+.wktcUpcomingTeams b{
   min-width:0;
   overflow-wrap:anywhere;
 }
-.vktcUpcomingTeams span{
+.wktcUpcomingTeams span{
   flex:0 0 auto;
   font-size:9px;
   color:#999;
   font-weight:900;
 }
-.vktcUpcomingHomeRow>small{
+.wktcUpcomingHomeRow>small{
   font-size:9px;
   color:#777;
   white-space:nowrap;
 }
-.vktcUpcomingIntro{
+.wktcUpcomingIntro{
   margin-bottom:12px;
 }
-.vktcPendingMatchGrid{
+.wktcPendingMatchGrid{
   align-items:stretch;
 }
-.vktcPendingMatchCard{
-  border-top:3px solid #009b4a;
+.wktcPendingMatchCard{
+  border-top:3px solid #b65f1a;
 }
-.vktcUpcomingEmpty{
+.wktcUpcomingEmpty{
   display:grid;
   justify-items:center;
   gap:7px;
   padding:35px 16px;
 }
-.vktcUpcomingEmpty b{
+.wktcUpcomingEmpty b{
   font-size:15px;
 }
-.vktcUpcomingEmpty span{
+.wktcUpcomingEmpty span{
   color:#777;
   font-size:11px;
   text-align:center;
 }
 @media(max-width:700px){
-  .vktcUpcomingHomeRow{
+  .wktcUpcomingHomeRow{
     grid-template-columns:62px minmax(0,1fr);
   }
-  .vktcUpcomingHomeRow>small{
+  .wktcUpcomingHomeRow>small{
     grid-column:2;
   }
-  .vktcUpcomingTeams{
+  .wktcUpcomingTeams{
     font-size:10px;
   }
 }
 
 
 /* =========================================================
-   V11.52 — VKTC SKY BLUE / NAVY THEME
-   Purpose: Make VKTC visually distinct from OPEN COURT
+   V11.52 — WKTC SKY BLUE / NAVY THEME
+   Purpose: Make WKTC visually distinct from OPEN COURT
    and reserve sky-blue for another future club.
    ========================================================= */
-.vktcApp{
-  --vktc-primary:#4a9fd5;
-  --vktc-primary-dark:#2d6f9c;
-  --vktc-primary-soft:#eaf6fc;
-  --vktc-primary-soft-2:#f6fbfe;
-  --vktc-accent:#79c7e8;
-  --vktc-ink:#20313d;
-  --vktc-muted:#6b7f8d;
-  --vktc-border:#d5e7f1;
-  --vktc-page:#f1f8fc;
-  color:var(--vktc-ink);
-  background:var(--vktc-page);
+.wktcApp{
+  --wktc-primary:#b65f1a;
+  --wktc-primary-dark:#74320e;
+  --wktc-primary-soft:#fff0dc;
+  --wktc-primary-soft-2:#fff8ef;
+  --wktc-accent:#e3a15e;
+  --wktc-ink:#2a170f;
+  --wktc-muted:#7b685d;
+  --wktc-border:#ead8c2;
+  --wktc-page:#f8efe3;
+  color:var(--wktc-ink);
+  background:var(--wktc-page);
 }
 
 /* Main page / shell */
-body:has(.vktcApp){
-  background:#f1f8fc;
+body:has(.wktcApp){
+  background:#f8efe3;
 }
-.vktcApp .main{
-  background:linear-gradient(180deg,#f7fbfe 0%,#edf6fb 100%);
+.wktcApp .main{
+  background:linear-gradient(180deg,#fffaf4 0%,#f5e6d5 100%);
 }
-.vktcApp .sidebar{
-  background:#16384f;
-  border-right-color:#28536e;
+.wktcApp .sidebar{
+  background:#2b170e;
+  border-right-color:#5b2c13;
 }
-.vktcApp .brand{
+.wktcApp .brand{
   background:#fff;
   border-radius:18px;
   padding:12px 14px;
   margin:0 0 20px;
 }
-.vktcApp .brand img{
+.wktcApp .brand img{
   height:126px;
 }
-.vktcApp .nav{
-  color:#dcebf3;
+.wktcApp .nav{
+  color:#ead8c2;
 }
-.vktcApp .nav:hover{
-  background:#24506b;
+.wktcApp .nav:hover{
+  background:#693317;
   color:#fff;
 }
-.vktcApp .nav.active{
-  background:#4a9fd5 !important;
-  border-color:#4a9fd5 !important;
+.wktcApp .nav.active{
+  background:#b65f1a !important;
+  border-color:#b65f1a !important;
   color:#fff !important;
   box-shadow:0 7px 18px rgba(74,159,213,.26);
 }
-.vktcApp .nav.active .navIcon{
+.wktcApp .nav.active .navIcon{
   color:#fff;
 }
-.vktcApp .dbBox{
-  background:#1d455f;
-  border-color:#32617d;
-  color:#eef8fd;
+.wktcApp .dbBox{
+  background:#3b2014;
+  border-color:#74411f;
+  color:#fff1de;
 }
-.vktcApp .dbBox small{
-  color:#b9d7e6;
+.wktcApp .dbBox small{
+  color:#d9b995;
 }
-.vktcApp .adminLink{
-  color:#caecfa;
+.wktcApp .adminLink{
+  color:#ffd89d;
 }
 
 /* Cards / panels */
-.vktcApp .surface,
-.vktcApp .mockCard,
-.vktcApp .rankingCombinedCard,
-.vktcApp .financeMetric,
-.vktcApp .mockAdminEdit{
+.wktcApp .surface,
+.wktcApp .mockCard,
+.wktcApp .rankingCombinedCard,
+.wktcApp .financeMetric,
+.wktcApp .mockAdminEdit{
   background:#fff;
-  border-color:var(--vktc-border);
+  border-color:var(--wktc-border);
   box-shadow:0 5px 18px rgba(45,111,156,.08);
 }
-.vktcApp .sectionHead,
-.vktcApp .mockCardHead{
-  border-color:#dcebf3;
+.wktcApp .sectionHead,
+.wktcApp .mockCardHead{
+  border-color:#ead8c2;
 }
-.vktcApp .sectionHead h2,
-.vktcApp .mockCardHead h2,
-.vktcApp .pageHeader h1{
-  color:#203543;
+.wktcApp .sectionHead h2,
+.wktcApp .mockCardHead h2,
+.wktcApp .pageHeader h1{
+  color:#3c2115;
 }
 
 /* Primary actions */
-.vktcApp .primary,
-.vktcApp .mobileMenuItem.active,
-.vktcApp .duesPayBtn{
-  background:var(--vktc-primary) !important;
-  border-color:var(--vktc-primary) !important;
+.wktcApp .primary,
+.wktcApp .mobileMenuItem.active,
+.wktcApp .duesPayBtn{
+  background:var(--wktc-primary) !important;
+  border-color:var(--wktc-primary) !important;
   color:#fff !important;
 }
-.vktcApp .primary:hover,
-.vktcApp .duesPayBtn:hover{
-  background:var(--vktc-primary-dark) !important;
-  border-color:var(--vktc-primary-dark) !important;
+.wktcApp .primary:hover,
+.wktcApp .duesPayBtn:hover{
+  background:var(--wktc-primary-dark) !important;
+  border-color:var(--wktc-primary-dark) !important;
 }
-.vktcApp .secondaryBtn,
-.vktcApp .mockOutlineButton{
-  border-color:#a9d2e6;
-  color:#2e729e;
+.wktcApp .secondaryBtn,
+.wktcApp .mockOutlineButton{
+  border-color:#d8ad7f;
+  color:#8c4515;
   background:#fff;
 }
-.vktcApp .secondaryBtn:hover,
-.vktcApp .mockOutlineButton:hover{
-  background:var(--vktc-primary-soft-2);
-  border-color:#7fbcda;
+.wktcApp .secondaryBtn:hover,
+.wktcApp .mockOutlineButton:hover{
+  background:var(--wktc-primary-soft-2);
+  border-color:#bf7533;
 }
-.vktcApp .sectionHead button,
-.vktcApp .mockCardHead button,
-.vktcApp .rankingMoreBtn,
-.vktcApp .nameLink{
-  color:var(--vktc-primary) !important;
+.wktcApp .sectionHead button,
+.wktcApp .mockCardHead button,
+.wktcApp .rankingMoreBtn,
+.wktcApp .nameLink{
+  color:var(--wktc-primary) !important;
 }
 
 /* Inputs */
-.vktcApp input,
-.vktcApp select,
-.vktcApp textarea{
-  border-color:#c8dfe9;
+.wktcApp input,
+.wktcApp select,
+.wktcApp textarea{
+  border-color:#dec7ad;
 }
-.vktcApp input:focus,
-.vktcApp select:focus,
-.vktcApp textarea:focus{
+.wktcApp input:focus,
+.wktcApp select:focus,
+.wktcApp textarea:focus{
   outline:none;
-  border-color:#55a8d6;
+  border-color:#bf6b2b;
   box-shadow:0 0 0 3px rgba(74,159,213,.12);
 }
 
 /* Home identity */
-.vktcApp .mockEyebrow{
-  color:var(--vktc-primary) !important;
+.wktcApp .mockEyebrow{
+  color:var(--wktc-primary) !important;
 }
-.vktcApp .mockHero{
-  border-color:#d1e6f0;
-  background:linear-gradient(135deg,#fff 0%,#f4fbfe 100%);
+.wktcApp .mockHero{
+  border-color:#e0c39f;
+  background:linear-gradient(135deg,#fff 0%,#fff0dd 100%);
 }
-.vktcApp .mockHeroMeta>div{
+.wktcApp .mockHeroMeta>div{
   background:#f5fbfe;
-  border-color:#d8ebf4;
+  border-color:#ead0ad;
 }
-.vktcApp .mockHeroMeta span{
-  color:var(--vktc-primary);
+.wktcApp .mockHeroMeta span{
+  color:var(--wktc-primary);
 }
-.vktcApp .mockHeroImage{
+.wktcApp .mockHeroImage{
   background:#fff;
-  border-left:1px solid #d9eaf2;
+  border-left:1px solid #ead8c2;
 }
-.vktcApp .mockRankRows b,
-.vktcApp .vktcUpcomingDate b{
-  color:var(--vktc-primary) !important;
+.wktcApp .mockRankRows b,
+.wktcApp .wktcUpcomingDate b{
+  color:var(--wktc-primary) !important;
 }
-.vktcApp .vktcUpcomingHomeRow{
-  border-color:#d9eaf2;
+.wktcApp .wktcUpcomingHomeRow{
+  border-color:#ead8c2;
   background:#fbfdff;
 }
-.vktcApp .vktcUpcomingHomeRow:hover{
-  border-color:#8dc6e0;
-  background:#eef8fd;
+.wktcApp .wktcUpcomingHomeRow:hover{
+  border-color:#c88343;
+  background:#fff1de;
 }
-.vktcApp .vktcPendingMatchCard{
-  border-top-color:var(--vktc-primary) !important;
+.wktcApp .wktcPendingMatchCard{
+  border-top-color:var(--wktc-primary) !important;
 }
 
 /* Ranking */
-.vktcApp .rankingTopTab.active{
-  background:var(--vktc-primary-soft);
-  color:var(--vktc-primary);
-  border-color:#95cce5;
+.wktcApp .rankingTopTab.active{
+  background:var(--wktc-primary-soft);
+  color:var(--wktc-primary);
+  border-color:#d7a06d;
 }
-.vktcApp .exactRank.gold{
+.wktcApp .exactRank.gold{
   background:#d4aa58;
   color:#fff;
 }
-.vktcApp .exactRank.silver{
+.wktcApp .exactRank.silver{
   background:#9da8af;
   color:#fff;
 }
-.vktcApp .exactRank.bronze{
+.wktcApp .exactRank.bronze{
   background:#b78062;
   color:#fff;
 }
 
 /* Members / badges */
-.vktcApp .membershipAdminBadge.regular{
-  background:#e6f4fb;
-  color:#4a9fd5;
+.wktcApp .membershipAdminBadge.regular{
+  background:#fff0dc;
+  color:#b65f1a;
 }
-.vktcApp .membershipAdminBadge.associate{
-  background:#eef2fb;
-  color:#536e9b;
+.wktcApp .membershipAdminBadge.associate{
+  background:#f5e8da;
+  color:#73513d;
 }
-.vktcApp .membershipAdminBadge.guest,
-.vktcApp .financeGuestTag{
+.wktcApp .membershipAdminBadge.guest,
+.wktcApp .financeGuestTag{
   background:#fff5df;
   color:#896220;
 }
-.vktcApp .statusBadge{
+.wktcApp .statusBadge{
   background:#edf3f6;
   color:#526573;
 }
-.vktcApp .statusBadge.inactive{
+.wktcApp .statusBadge.inactive{
   background:#f2f3f4;
   color:#7b8a94;
 }
 
 /* Global player import */
-.vktcApp .globalPlayerImportPanel{
-  border-color:#c9e0ea;
+.wktcApp .globalPlayerImportPanel{
+  border-color:#dfc5a7;
 }
-.vktcApp .globalPlayerResultRow{
-  border-color:#d9e8ef;
+.wktcApp .globalPlayerResultRow{
+  border-color:#ead8c2;
   background:#fbfdff;
 }
-.vktcApp .globalPlayerActions button{
-  border-color:#a9d2e6;
-  color:#2d719c;
+.wktcApp .globalPlayerActions button{
+  border-color:#d8ad7f;
+  color:#964715;
   background:#fff;
 }
-.vktcApp .globalPlayerActions button:hover:not(:disabled){
-  background:#edf8fd;
+.wktcApp .globalPlayerActions button:hover:not(:disabled){
+  background:#fff1de;
 }
 
 /* Finance */
-.vktcApp .vktcFeeRule{
+.wktcApp .wktcFeeRule{
   border-color:#c9e2ee;
   background:#f2faff;
 }
-.vktcApp .vktcFeeRule b,
-.vktcApp .vktcGuestFixedFee{
-  color:var(--vktc-primary) !important;
+.wktcApp .wktcFeeRule b,
+.wktcApp .wktcGuestFixedFee{
+  color:var(--wktc-primary) !important;
 }
-.vktcApp .financeMetric b{
+.wktcApp .financeMetric b{
   color:#256c98;
 }
-.vktcApp .duesBadge.paid{
+.wktcApp .duesBadge.paid{
   background:#e7f3f8;
   color:#416a82;
 }
-.vktcApp .duesPayBtn.guestPending{
+.wktcApp .duesPayBtn.guestPending{
   background:#5e879f !important;
   border-color:#5e879f !important;
 }
 
 /* Match / score areas */
-.vktcApp .matchTypePill.friendly{
-  background:#e7f4fa;
-  color:#2e739e;
+.wktcApp .matchTypePill.friendly{
+  background:#fff0dc;
+  color:#984714;
 }
-.vktcApp .pendingPermissionNote.friendly{
+.wktcApp .pendingPermissionNote.friendly{
   background:#f5fbfe;
   color:#617785;
-  border-color:#d5e8f1;
+  border-color:#ead8c2;
 }
-.vktcApp .scoreEntry{
-  background:#f8fcfe;
+.wktcApp .scoreEntry{
+  background:#fffaf5;
   border-color:#dcebf2;
 }
-.vktcApp .vs{
-  color:#7894a4;
+.wktcApp .vs{
+  color:#9a806f;
 }
 
 /* Mobile */
-.vktcApp .mobileMenuPanel{
-  background:#16384f;
+.wktcApp .mobileMenuPanel{
+  background:#2b170e;
 }
-.vktcApp .mobileMenuTop{
-  border-color:#2b5873;
+.wktcApp .mobileMenuTop{
+  border-color:#6b3619;
 }
-.vktcApp .mobileMenuTop b,
-.vktcApp .mobileMenuTop span,
-.vktcApp .mobileMenuItem{
-  color:#eef8fd;
+.wktcApp .mobileMenuTop b,
+.wktcApp .mobileMenuTop span,
+.wktcApp .mobileMenuItem{
+  color:#fff1de;
 }
-.vktcApp .mobileMenuItem{
-  background:#20465f;
-  border-color:#32647f;
+.wktcApp .mobileMenuItem{
+  background:#4a2817;
+  border-color:#75421f;
 }
-.vktcApp .mobileMenuItem.active{
+.wktcApp .mobileMenuItem.active{
   box-shadow:none;
 }
-.vktcApp .mobileMenuAdminBtn{
-  border-color:#6fa7c5;
-  color:#e5f6fd;
+.wktcApp .mobileMenuAdminBtn{
+  border-color:#c88748;
+  color:#ffe3b4;
 }
-.vktcApp .mobileHomeLogo{
+.wktcApp .mobileHomeLogo{
   background:#fff;
-  border-color:#d7e8ef;
+  border-color:#dfbd97;
 }
-.vktcApp .mobileQuickDrawButton,
-.vktcApp .mobileMyPageQuickButton{
-  background:#4a9fd5;
+.wktcApp .mobileQuickDrawButton,
+.wktcApp .mobileMyPageQuickButton{
+  background:#b65f1a;
   color:#fff;
-  border-color:#4a9fd5;
+  border-color:#b65f1a;
   box-shadow:0 6px 18px rgba(45,111,156,.28);
 }
 
 /* Decorative footer */
-.vktcApp .mockFooterStrip{
-  background:linear-gradient(120deg,#235d82 0%,#173b54 100%);
-  border-color:#235d82;
+.wktcApp .mockFooterStrip{
+  background:linear-gradient(120deg,#71300d 0%,#2b170e 100%);
+  border-color:#71300d;
 }
-.vktcApp .mockFooterStrip,
-.vktcApp .mockFooterStrip b,
-.vktcApp .mockFooterStrip small{
-  color:#eff9fd;
+.wktcApp .mockFooterStrip,
+.wktcApp .mockFooterStrip b,
+.wktcApp .mockFooterStrip small{
+  color:#fff2df;
 }
-.vktcApp .mockFooterPoint{
+.wktcApp .mockFooterPoint{
   border-color:rgba(255,255,255,.18);
 }
-.vktcApp .mockMedal{
+.wktcApp .mockMedal{
   color:#e0b35f;
 }
 
-/* Keep the supplied VKTC logo untouched; the surrounding site uses a sky-blue/navy identity distinct from the other club sites. */
+/* Keep the supplied WKTC logo untouched; the surrounding site uses a sky-blue/navy identity distinct from the other club sites. */
 
 
 /* =========================================================
-   VKTC admin self-service password change
+   WKTC admin self-service password change
    ========================================================= */
-.vktcApp .adminPasswordPanel{
-  border-color:#cee4ee;
+.wktcApp .adminPasswordPanel{
+  border-color:#e2c8aa;
 }
-.vktcApp .adminPasswordEmail{
-  color:#4a9fd5;
+.wktcApp .adminPasswordEmail{
+  color:#b65f1a;
   font-weight:800;
   font-size:12px;
   word-break:break-all;
 }
-.vktcApp .adminPasswordForm{
+.wktcApp .adminPasswordForm{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:14px;
   align-items:end;
 }
-.vktcApp .adminPasswordForm label{
+.wktcApp .adminPasswordForm label{
   display:flex;
   flex-direction:column;
   gap:7px;
-  color:#566c79;
+  color:#6f594b;
   font-size:12px;
   font-weight:800;
 }
-.vktcApp .adminPasswordForm input{
+.wktcApp .adminPasswordForm input{
   width:100%;
   padding:11px 12px;
-  border:1px solid #c8dfe9;
+  border:1px solid #dec7ad;
   border-radius:10px;
   background:#fff;
 }
-.vktcApp .adminPasswordError{
+.wktcApp .adminPasswordError{
   grid-column:1/-1;
   padding:10px 12px;
   border-radius:10px;
-  background:#eef8fd;
-  color:#2b759f;
+  background:#fff1de;
+  color:#8b3f12;
   font-size:11px;
   font-weight:800;
 }
-.vktcApp .adminPasswordActions{
+.wktcApp .adminPasswordActions{
   grid-column:1/-1;
   display:flex;
   justify-content:space-between;
@@ -10632,24 +10632,24 @@ body:has(.vktcApp){
   gap:16px;
   padding-top:2px;
 }
-.vktcApp .adminPasswordActions p{
+.wktcApp .adminPasswordActions p{
   margin:0;
-  color:#6b7f8d;
+  color:#7b685d;
   font-size:10px;
   line-height:1.5;
 }
-.vktcApp .adminPasswordActions button{
+.wktcApp .adminPasswordActions button{
   flex:0 0 auto;
 }
 @media(max-width:760px){
-  .vktcApp .adminPasswordForm{
+  .wktcApp .adminPasswordForm{
     grid-template-columns:1fr;
   }
-  .vktcApp .adminPasswordActions{
+  .wktcApp .adminPasswordActions{
     flex-direction:column;
     align-items:stretch;
   }
-  .vktcApp .adminPasswordActions button{
+  .wktcApp .adminPasswordActions button{
     width:100%;
   }
 }
@@ -10694,3 +10694,63 @@ button.primary:hover,.primaryBtn:hover,.btnPrimary:hover,.ctaButton:hover{
 .badge,.pill,.tag{
   border-color:#d69a58;
 }
+
+
+/* =========================================================
+   WKTC V11.59 FINAL VISUAL IDENTITY
+   ========================================================= */
+body:has(.wktcApp){background:#f8efe3 !important}
+.wktcApp{color:#2a170f;background:#f8efe3}
+.wktcApp .main{background:linear-gradient(180deg,#fffaf4 0%,#f5e6d5 100%) !important}
+.wktcApp .sidebar{background:linear-gradient(180deg,#24130c 0%,#4a230f 100%) !important;border-right-color:#6b3619}
+.wktcApp .brand{background:#fff9ef !important;border:1px solid #c98742;border-radius:18px;box-shadow:0 8px 24px rgba(71,31,10,.22)}
+.wktcApp .brand img{height:142px !important;width:100%;object-fit:contain;background:#fff9ef !important}
+.wktcApp .nav{color:#f3ddc5}
+.wktcApp .nav:hover{background:#633018 !important;color:#fff}
+.wktcApp .nav.active{background:#b65f1a !important;color:#fff !important;box-shadow:0 7px 18px rgba(182,95,26,.30)}
+.wktcApp .dbBox{background:#3b2014 !important;border-color:#74411f;color:#fff3df}
+.wktcApp .dbBox small{color:#d9b995}
+.wktcApp .adminLink{color:#ffd89d}
+
+.wktcApp .surface,.wktcApp .mockCard,.wktcApp .rankingCombinedCard,.wktcApp .mockAdminEdit{
+  background:#fffdf9 !important;border-color:#ead8c2 !important;box-shadow:0 5px 18px rgba(104,50,14,.08)
+}
+.wktcApp .sectionHead,.wktcApp .mockCardHead{border-color:#ead8c2}
+.wktcApp .sectionHead h2,.wktcApp .mockCardHead h2,.wktcApp .pageHeader h1{color:#3c2115}
+.wktcApp .sectionHead button,.wktcApp .mockCardHead button,.wktcApp .rankingMoreBtn,.wktcApp .nameLink{color:#a44e15 !important}
+
+.wktcApp .primary,.wktcApp .mobileMenuItem.active,.wktcApp .mobileQuickDrawButton,.wktcApp .mobileMyPageQuickButton{
+  background:#b65f1a !important;border-color:#b65f1a !important;color:#fff !important
+}
+.wktcApp .primary:hover{background:#74320e !important}
+.wktcApp .secondaryBtn,.wktcApp .mockOutlineButton{border-color:#d8ad7f;color:#8c4515;background:#fffdf9}
+.wktcApp .secondaryBtn:hover,.wktcApp .mockOutlineButton:hover{background:#fff3e2;border-color:#bf7533}
+
+.wktcApp .mockHero{background:linear-gradient(135deg,#fffdf9 0%,#fff0dd 100%) !important;border-color:#e0c39f}
+.wktcApp .mockHeroImage{background:#2b170e !important;border-left:1px solid #c7833f}
+.wktcApp .mockHeroImage img{object-fit:contain;padding:18px;background:#2b170e !important}
+.wktcApp .mockEyebrow,.wktcApp .mockRankRows b,.wktcApp .wktcUpcomingDate b{color:#a74f16 !important}
+.wktcApp .mockHeroMeta>div{background:#fff6e9;border-color:#ead0ad}
+.wktcApp .mockHeroMeta span{color:#b65f1a}
+.wktcApp .wktcUpcomingHomeRow{background:#fffaf4;border-color:#ead8c2}
+.wktcApp .wktcUpcomingHomeRow:hover{background:#fff1de;border-color:#c88343}
+.wktcApp .wktcPendingMatchCard{border-top-color:#b65f1a !important}
+
+.wktcApp .metricIcon,.wktcApp .avatar,.wktcApp .check{background:#fff0dc;color:#a44e15}
+.wktcApp .person.on{border-color:#b65f1a;background:#fff7ec}
+.wktcApp .person.on .check{background:#b65f1a;color:#fff}
+.wktcApp .dateTile{background:#fff0dc;color:#a44e15}
+.wktcApp .rankingTopTab.active{background:#fff0dc !important;color:#944212 !important;border-color:#d7a06d}
+.wktcApp .membershipAdminBadge.regular{background:#fff0dc;color:#a14c16}
+.wktcApp .membershipAdminBadge.associate{background:#f5e8da;color:#73513d}
+.wktcApp .membershipAdminBadge.guest{background:#fff7df;color:#8a641e}
+
+.wktcApp input,.wktcApp select,.wktcApp textarea{border-color:#dec7ad}
+.wktcApp input:focus,.wktcApp select:focus,.wktcApp textarea:focus{outline:none;border-color:#bf6b2b;box-shadow:0 0 0 3px rgba(182,95,26,.12)}
+
+.wktcApp .mobileMenuPanel{background:#2b170e !important}
+.wktcApp .mobileMenuItem{background:#4a2817;border-color:#75421f;color:#fff2df}
+.wktcApp .mobileHomeLogo{background:#fff9ef;border-color:#dfbd97}
+.wktcApp .mobileHomeLogo img,.wktcApp .mockHomeMobileBrand img{object-fit:contain;background:#fff9ef}
+.wktcApp .mockFooterStrip{background:linear-gradient(120deg,#71300d 0%,#2b170e 100%) !important;border-color:#71300d}
+.wktcApp .mockFooterStrip,.wktcApp .mockFooterStrip b,.wktcApp .mockFooterStrip small{color:#fff2df}
