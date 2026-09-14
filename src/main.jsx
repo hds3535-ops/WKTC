@@ -4,6 +4,7 @@ import{supabase,supabaseConfigStatus}from"./lib/supabase";
 import"./styles.css";
 
 const demo=[];
+
 const VALID_TABS=["home","schedule","mypage","events","members","session","draw","ranking","profile","settings"];
 const PUBLIC_NAV=[
   ["home","홈","⌂"],
@@ -1000,7 +1001,7 @@ function App(){
   useEffect(()=>{
     if(!supabase||!authReady)return;
     Promise.all([loadMembers(),loadHistory(),loadClubEvents(),loadClubPromo(),loadClubFoundation()]).catch(err=>console.error("화면 최신화 실패",err));
-    if(false&&(isAdmin||memberUnlocked))loadFinance();
+    if(tab==="accounting"&&(isAdmin||memberUnlocked))loadFinance();
   },[tab,authReady,isAdmin,memberUnlocked]);
 
   useEffect(()=>{
@@ -3101,7 +3102,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
                 <h1>클럽 소개</h1>
                 <p>{clubPromo.content}</p>
 
-                <div className="mockHeroMeta"><div><span>♙</span><b>클럽 운영</b><em>WKTC</em></div><div><span>◎</span><b>회계 기능</b><em>사용 안 함</em></div></div>
+                <div className="mockHeroMeta"><div><span>♙</span><b>공용 OTR</b><em>4개 클럽 연동</em></div><div><span>◎</span><b>클럽 운영</b><em>회계 기능 없음</em></div></div>
 
               </div>
               <div className="mockHeroImage" aria-hidden="true">
@@ -3819,7 +3820,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
         </section>
       </div>}
 
-      {false&&<>
+      {tab==="accounting"&&<>
         {!isAdmin&&!memberUnlocked
           ?<section className="surface padded accountingUnlock">
             <div className="sectionHead"><h2>회계</h2></div>
@@ -4038,7 +4039,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
           <div className="sectionHead">
             <div>
               <h2>공용 OTR · WKTC 독립 운영</h2>
-              <small>V11.59 WKTC</small>
+              <small>V11.52 WKTC Launch</small>
             </div>
             <span className="multiClubReadyBadge">{clubFoundationError?"확인 필요":isAdmin?"SECURED":"READY"}</span>
           </div>
