@@ -138,7 +138,7 @@ function calculateOtrChanges(teamA,teamB,scoreA,scoreB){
     raw.push({id:p.id,delta,before:p.rating,after:p.rating+delta,won:Number(scoreB)>Number(scoreA),games});
   }
 
-  // V11.23: each player's OTR delta is final as calculated.
+  // V11.23: each player's AKTR delta is final as calculated.
   // Do NOT force the total delta of all players back to zero.
   return raw;
 }
@@ -208,7 +208,7 @@ function createRoundDraw(players,mode,format="doubles",partnerCounts={},opponent
       }
 
       // Repeated teammates are heavily penalized.
-      // OTR balance still matters, but a small OTR difference is preferred over repeating the same partner.
+      // AKTR balance still matters, but a small AKTR difference is preferred over repeating the same partner.
       const score=(partnerRepeat*180)+(opponentRepeat*8)+otrDiff;
 
       if(!best||score<best.score){
@@ -409,8 +409,8 @@ function combinations(arr,k){
 function supplementalHelperOtrFit(remainder,helpers){
   if(!remainder.length||!helpers.length)return 0;
 
-  // With 2 remaining + 2 helpers, compare the two possible 1:1 OTR matches.
-  // This strongly prefers helpers near each remaining player's actual OTR.
+  // With 2 remaining + 2 helpers, compare the two possible 1:1 AKTR matches.
+  // This strongly prefers helpers near each remaining player's actual AKTR.
   if(remainder.length===2&&helpers.length===2){
     const [r1,r2]=remainder,[h1,h2]=helpers;
     return Math.min(
@@ -537,7 +537,7 @@ function createSeasonSetDraw(players,rotation=0,format="doubles",helperTargetHis
   //   - 4 players play the normal season doubles match.
   //   - the remaining 2 players are joined by 2 already-used helpers.
   //   - only the 2 remaining players receive season credit in the supplemental match.
-  //   - the 2 helpers receive OTR/career W-L only, not a second season result.
+  //   - the 2 helpers receive AKTR/career W-L only, not a second season result.
   if(remainder.length>0 && regular.length>=4){
     const helperNeed=4-remainder.length;
     const helperChoices=combinations(regular,helperNeed);
@@ -562,12 +562,12 @@ function createSeasonSetDraw(players,rotation=0,format="doubles",helperTargetHis
         }
 
         // V11.26 supplemental priority:
-        // 1) keep the two teams' total OTR as close as possible,
-        // 2) choose helpers whose OTR is close to the remaining players,
+        // 1) keep the two teams' total AKTR as close as possible,
+        // 2) choose helpers whose AKTR is close to the remaining players,
         // 3) only then use repeated partner/opponent history as a light tie-breaker.
         //
-        // Previously the repeat penalty could overpower OTR balance and make helper
-        // selection look random. The new weights intentionally make OTR the main goal.
+        // Previously the repeat penalty could overpower AKTR balance and make helper
+        // selection look random. The new weights intentionally make AKTR the main goal.
         const score=
           (teamDiff*10)+
           helperFit+
@@ -2266,7 +2266,7 @@ function App(){
     const status=form.membership_status||"regular";
     const rating=Number(form.rating);
     if(!Number.isFinite(rating)){
-      alert("시작 OTR을 확인해주세요.");
+      alert("시작 AKTR을 확인해주세요.");
       return;
     }
 
@@ -2293,7 +2293,7 @@ function App(){
     const member=members.find(m=>m.id===id);
     if(!member)return;
     if(!confirm(`${member.name}을(를) WKTC에서 비활동 상태로 변경할까요?
-다른 클럽의 소속/활동 상태와 글로벌 OTR은 영향을 받지 않습니다.`))return;
+다른 클럽의 소속/활동 상태와 글로벌 AKTR은 영향을 받지 않습니다.`))return;
 
     try{
       const status=currentClubMembershipStatus(id);
@@ -2339,7 +2339,7 @@ function App(){
     if(!confirm(`${member.name}을(를) WKTC 선수 목록에서 제거할까요?
 
 공용 선수 DB 자체는 삭제하지 않습니다.
-다른 클럽의 소속, 글로벌 OTR, 다른 클럽 경기 기록은 그대로 유지됩니다.
+다른 클럽의 소속, 글로벌 AKTR, 다른 클럽 경기 기록은 그대로 유지됩니다.
 WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부됩니다.`))return;
 
     const{error}=await supabase.rpc("admin_remove_player_from_club",{
@@ -2727,7 +2727,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
         if(error)throw error;
       }
       await Promise.all([loadMembers(),loadHistory()]);
-      flash("스코어, 승패, 개인별 OTR 변화가 저장되었습니다.");
+      flash("스코어, 승패, 개인별 AKTR 변화가 저장되었습니다.");
       // Home / automatic Schedule view will re-check the preferred stored schedule
       // after historyMatches refreshes. It advances only when every scheduled match
       // on the current date has been completed.
@@ -2817,22 +2817,22 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
       member_id:c.id,match_id:editingMatch.id,event_type:"match",
       rating_before:c.before,rating_after:c.after,delta:c.delta,note:`${a}-${b}`
     })));
-    if(eError){alert("OTR 기록 저장 실패: "+eError.message);return;}
+    if(eError){alert("AKTR 기록 저장 실패: "+eError.message);return;}
 
     setEditingMatch(null);
     await Promise.all([loadMembers(),loadHistory()]);
-    flash("경기 스코어와 OTR을 다시 계산했습니다.");
+    flash("경기 스코어와 AKTR을 다시 계산했습니다.");
   }
 
   async function deleteMatch(match){
     if(!requireAdmin())return;
-    if(!confirm("이 경기 기록을 삭제할까요?\n승/패와 OTR 변화도 함께 되돌아갑니다."))return;
+    if(!confirm("이 경기 기록을 삭제할까요?\n승/패와 AKTR 변화도 함께 되돌아갑니다."))return;
     const reversed=await reverseMatchResult(match);
     if(!reversed)return;
     const{error}=await supabase.from("matches").delete().eq("club_id",CURRENT_CLUB_ID).eq("id",match.id);
     if(error){alert("경기 삭제 실패: "+error.message);return;}
     await Promise.all([loadMembers(),loadHistory()]);
-    flash("경기 기록과 해당 경기의 전적/OTR 변화를 삭제했습니다.");
+    flash("경기 기록과 해당 경기의 전적/AKTR 변화를 삭제했습니다.");
   }
 
 
@@ -2865,8 +2865,8 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
       setOtrSeedPreview(null);
       setOtrRebuildLastBackup((backupRows||[])[0]||null);
     }catch(err){
-      console.error("OTR 시작점 재설정 도구 불러오기 실패",err);
-      if(tab==="settings")alert("OTR 재계산 도구를 불러오지 못했습니다. V11.38 SQL 적용 여부를 확인해주세요.\n\n"+err.message);
+      console.error("AKTR 시작점 재설정 도구 불러오기 실패",err);
+      if(tab==="settings")alert("AKTR 재계산 도구를 불러오지 못했습니다. V11.38 SQL 적용 여부를 확인해주세요.\n\n"+err.message);
     }finally{
       setOtrRebuildLoading(false);
     }
@@ -2883,7 +2883,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
     for(const row of otrSeedRows){
       const seed=Number(row.seed_rating);
       if(!Number.isInteger(seed)||seed<100||seed>3000){
-        throw new Error(`${row.name}의 시작 OTR을 100~3000 사이 정수로 입력해주세요.`);
+        throw new Error(`${row.name}의 시작 AKTR을 100~3000 사이 정수로 입력해주세요.`);
       }
       payload.push({member_id:row.member_id,seed_rating:seed});
     }
@@ -2902,9 +2902,9 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
       });
       if(error)throw error;
       setOtrSeedPreview(data||null);
-      flash(`완료 경기 ${Number(data?.matches||0)}경기를 새 시작 OTR 기준으로 미리 계산했습니다.`);
+      flash(`완료 경기 ${Number(data?.matches||0)}경기를 새 시작 AKTR 기준으로 미리 계산했습니다.`);
     }catch(err){
-      alert("OTR 재계산 미리보기 실패: "+err.message);
+      alert("AKTR 재계산 미리보기 실패: "+err.message);
     }finally{
       setOtrRebuildBusy(false);
     }
@@ -2921,12 +2921,12 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
     try{payload=otrSeedPayload();}catch(err){alert(err.message);return;}
 
     const ok=confirm(
-      `전체 OTR을 새 시작점에서 다시 계산합니다.\n\n`+
+      `전체 AKTR을 새 시작점에서 다시 계산합니다.\n\n`+
       `• 완료 경기 ${Number(otrSeedPreview.matches||0)}경기 전체 재생\n`+
       `• 단식/복식 · 시즌/비정규 모두 포함\n`+
       `• 현재 no-zero-sum 공식 사용\n`+
       `• 경기 스코어와 시즌 기록은 변경하지 않음\n`+
-      `• 기존 수동 OTR 조정 기록은 새 계산에서 제외\n\n`+
+      `• 기존 수동 AKTR 조정 기록은 새 계산에서 제외\n\n`+
       `실행 직전 상태는 자동 백업됩니다. 계속할까요?`
     );
     if(!ok)return;
@@ -2941,9 +2941,9 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
 
       await Promise.all([loadMembers(),loadHistory()]);
       await loadOtrRebuildEditor();
-      flash(`새 시작 OTR 기준으로 ${Number(data?.matches||0)}경기를 다시 계산했습니다.`);
+      flash(`새 시작 AKTR 기준으로 ${Number(data?.matches||0)}경기를 다시 계산했습니다.`);
     }catch(err){
-      alert("전체 OTR 재계산 실패: "+err.message);
+      alert("전체 AKTR 재계산 실패: "+err.message);
     }finally{
       setOtrRebuildBusy(false);
     }
@@ -2953,10 +2953,10 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
     if(!requireAdmin())return;
     const backup=otrRebuildLastBackup;
     if(!backup||backup.restored_at){
-      alert("되돌릴 수 있는 최근 OTR 재계산 백업이 없습니다.");
+      alert("되돌릴 수 있는 최근 AKTR 재계산 백업이 없습니다.");
       return;
     }
-    if(!confirm("가장 최근 OTR 전체 재계산 직전 상태로 되돌릴까요?\n\n시작 OTR, 현재 OTR, 승/패, OTR 그래프 기록이 모두 재계산 직전 상태로 복구됩니다."))return;
+    if(!confirm("가장 최근 AKTR 전체 재계산 직전 상태로 되돌릴까요?\n\n시작 AKTR, 현재 AKTR, 승/패, AKTR 그래프 기록이 모두 재계산 직전 상태로 복구됩니다."))return;
 
     setOtrRebuildBusy(true);
     try{
@@ -2966,9 +2966,9 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
       if(error)throw error;
       await Promise.all([loadMembers(),loadHistory()]);
       await loadOtrRebuildEditor();
-      flash("OTR을 재계산 직전 상태로 되돌렸습니다.");
+      flash("AKTR을 재계산 직전 상태로 되돌렸습니다.");
     }catch(err){
-      alert("OTR 백업 복원 실패: "+err.message);
+      alert("AKTR 백업 복원 실패: "+err.message);
     }finally{
       setOtrRebuildBusy(false);
     }
@@ -3080,7 +3080,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
         <b className="mobilePageTitle">{title}</b>
       </div>}
       <header className={tab==="home"?"pageHeader homePageHeader":"pageHeader"}>
-        {tab!=="home"&&<div><h1>{title}</h1><p>{tab==="profile"?"최근 경기와 OTR 변화를 확인하세요.":isAdmin?"관리자 모드입니다.":"회원용 읽기 전용 화면입니다."}</p></div>}
+        {tab!=="home"&&<div><h1>{title}</h1><p>{tab==="profile"?"최근 경기와 AKTR 변화를 확인하세요.":isAdmin?"관리자 모드입니다.":"회원용 읽기 전용 화면입니다."}</p></div>}
         <div className="headerActions">
           <label className="dateBox"><span>▣</span><input type="date" value={session.date} onChange={e=>setSession({...session,date:e.target.value})}/></label>
         </div>
@@ -3102,7 +3102,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
                 <h1>클럽 소개</h1>
                 <p>{clubPromo.content}</p>
 
-                <div className="mockHeroMeta"><div><span>♙</span><b>공용 OTR</b><em>4개 클럽 연동</em></div><div><span>◎</span><b>클럽 운영</b><em>회계 기능 없음</em></div></div>
+                <div className="mockHeroMeta"><div><span>♙</span><b>공용 AKTR</b><em>4개 클럽 연동</em></div><div><span>◎</span><b>클럽 운영</b><em>회계 기능 없음</em></div></div>
 
               </div>
               <div className="mockHeroImage" aria-hidden="true">
@@ -3203,7 +3203,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
                     {mockHomeClubRows.map((m,i)=><div key={m.id}>
                       <span className={`n${i+1}`}>{i+1}</span>
                       <button onClick={()=>openProfile(m.id)}>{m.name}</button>
-                      <b>{m.rating.toLocaleString()} OTR</b>
+                      <b>{m.rating.toLocaleString()} AKTR</b>
                     </div>)}
                     {!mockHomeClubRows.length&&<div className="mockRankEmpty">클럽 랭킹 기록이 없습니다.</div>}
                   </div>
@@ -3359,7 +3359,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
             </form>
             :memberIdentity&&<div className="myPageIdentity">
               <div><small>PLAYER</small><b>{memberIdentity.name}</b><span>개인 PIN 인증됨</span></div>
-              <div><small>CURRENT OTR</small><b>{Number(memberMap[memberIdentity.member_id]?.rating||0).toLocaleString()}</b><span>{myPageData.rackets.length} RACKET</span></div>
+              <div><small>CURRENT AKTR</small><b>{Number(memberMap[memberIdentity.member_id]?.rating||0).toLocaleString()}</b><span>{myPageData.rackets.length} RACKET</span></div>
               <button onClick={clearMemberAccess}>인증 해제</button>
             </div>}
         </section>
@@ -3480,7 +3480,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
               return <div className="globalPlayerResultRow" key={p.member_id}>
                 <div className="globalPlayerIdentity">
                   <b>{p.name}</b>
-                  <span>{p.rating} OTR · {p.gender==="M"?"남":"여"}</span>
+                  <span>{p.rating} AKTR · {p.gender==="M"?"남":"여"}</span>
                   <small>{p.primary_club_name?`정회원 소속: ${p.primary_club_short_name||p.primary_club_name}`:"현재 정회원 소속 없음"}</small>
                 </div>
                 <div className="globalPlayerActions">
@@ -3507,7 +3507,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
               <option value="guest">게스트</option>
             </select></label>
             <label>성별<select value={form.gender} onChange={e=>setForm({...form,gender:e.target.value})}><option value="M">남성</option><option value="F">여성</option></select></label>
-            <label>시작 OTR<input type="number" value={form.rating} onChange={e=>setForm({...form,rating:e.target.value})}/></label>
+            <label>시작 AKTR<input type="number" value={form.rating} onChange={e=>setForm({...form,rating:e.target.value})}/></label>
             <button className="primary">추가</button>
           </form>
           <div className="membershipPrivacyNote">
@@ -3525,7 +3525,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
               <button className={memberFilter==="all"?"filterBtn on":"filterBtn"} onClick={()=>setMemberFilter("all")}>전체</button>
             </div>
           </div>
-          <div className="tableWrap"><table><thead><tr><th>이름</th><th>상태</th><th>관리등급</th><th>성별</th><th>OTR</th><th>승</th><th>패</th><th>승률</th>{isAdmin&&<th>개인 PIN</th>}{isAdmin&&<th></th>}</tr></thead><tbody>
+          <div className="tableWrap"><table><thead><tr><th>이름</th><th>상태</th><th>관리등급</th><th>성별</th><th>AKTR</th><th>승</th><th>패</th><th>승률</th>{isAdmin&&<th>개인 PIN</th>}{isAdmin&&<th></th>}</tr></thead><tbody>
             {filteredMembers.map(m=>{const n=m.wins+m.losses;return <tr key={m.id} className={m.active===false?"inactiveRow":""}>
               <td className="memberCell">
                 <button className="nameLink" onClick={()=>openProfile(m.id)}>{m.name}</button>
@@ -3585,7 +3585,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
           </div>}
 
           <div className="people">{activeMembers.map(m=><button key={m.id} className={selected.includes(m.id)?"person on":"person"} onClick={()=>setSelected(s=>s.includes(m.id)?s.filter(x=>x!==m.id):[...s,m.id])}>
-            <span className="check">{selected.includes(m.id)?"✓":""}</span><span className="avatar">{m.name[0]}</span><b>{m.name}<em className={publicMemberType(m)==="guest"?"participantType guest":"participantType"}>{publicMemberLabel(m)}</em></b><small>{m.rating} OTR</small>
+            <span className="check">{selected.includes(m.id)?"✓":""}</span><span className="avatar">{m.name[0]}</span><b>{m.name}<em className={publicMemberType(m)==="guest"?"participantType guest":"participantType"}>{publicMemberLabel(m)}</em></b><small>{m.rating} AKTR</small>
           </button>)}</div>
           <div className="drawCountHint">
             {isAdmin&&matchType==="season"
@@ -3595,8 +3595,8 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
                   남는 {selected.length%4}명도 시즌 기록 1경기를 가질 수 있도록,
                   이미 시즌 기록을 받은 참가자 중 필요한 인원의 보조선수를 자동 재투입합니다.
                   {selected.length%4===2&&" 남는 2명에는 보조선수 2명이 추가되어 복식 보조경기가 만들어집니다."}
-                  보조선수는 남은 참가자의 OTR과 최대한 비슷하게 선택하고, 양 팀 총 OTR 차이도 최소화합니다.
-                  보조선수의 추가 경기는 OTR·통산전적만 반영되고 시즌전적에는 두 번 들어가지 않습니다.
+                  보조선수는 남은 참가자의 AKTR과 최대한 비슷하게 선택하고, 양 팀 총 AKTR 차이도 최소화합니다.
+                  보조선수의 추가 경기는 AKTR·통산전적만 반영되고 시즌전적에는 두 번 들어가지 않습니다.
                 </span>}
               </>
               :<>
@@ -3611,12 +3611,12 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
           {isAdmin&&matchType==="season"&&<div className="seasonFairMode">
             <div>
               <b>시즌 공정 대진</b>
-              <span>현재 시즌 성적이 비슷한 회원을 우선 묶고, 그 안에서 OTR로 양 팀 전력을 최대한 비슷하게 만듭니다.</span>
+              <span>현재 시즌 성적이 비슷한 회원을 우선 묶고, 그 안에서 AKTR로 양 팀 전력을 최대한 비슷하게 만듭니다.</span>
             </div>
-            <small>대진표를 한 번 생성할 때 선택한 모든 참가자는 시즌 기록을 정확히 1경기씩 받습니다. 복식 인원이 4명 단위로 맞지 않아 1명, 2명 또는 3명이 남으면 이미 시즌 경기를 받은 참가자 중 필요한 인원을 보조출전으로 자동 재투입해 복식 보조경기를 만듭니다. 예를 들어 6명이면 남은 2명 + 보조출전 2명으로 복식 1경기를 추가합니다. 이때 보조출전 선수는 남은 참가자와 OTR이 최대한 비슷한 선수부터 검토하고, 최종적으로 양 팀 총 OTR 차이가 가장 작아지도록 편성합니다. 보조출전의 추가 경기는 OTR·통산전적에만 반영되고 시즌전적에는 두 번 들어가지 않습니다.</small>
+            <small>대진표를 한 번 생성할 때 선택한 모든 참가자는 시즌 기록을 정확히 1경기씩 받습니다. 복식 인원이 4명 단위로 맞지 않아 1명, 2명 또는 3명이 남으면 이미 시즌 경기를 받은 참가자 중 필요한 인원을 보조출전으로 자동 재투입해 복식 보조경기를 만듭니다. 예를 들어 6명이면 남은 2명 + 보조출전 2명으로 복식 1경기를 추가합니다. 이때 보조출전 선수는 남은 참가자와 AKTR이 최대한 비슷한 선수부터 검토하고, 최종적으로 양 팀 총 AKTR 차이가 가장 작아지도록 편성합니다. 보조출전의 추가 경기는 AKTR·통산전적에만 반영되고 시즌전적에는 두 번 들어가지 않습니다.</small>
             <div className="seasonCreditLegend">
               <span className="seasonCreditBadge credited">시즌반영</span><span>이번 세트의 시즌 승패/포인트에 포함</span>
-              <span className="seasonCreditBadge helper">보조출전</span><span>OTR·통산전적만 반영, 시즌 승패/포인트 제외</span>
+              <span className="seasonCreditBadge helper">보조출전</span><span>AKTR·통산전적만 반영, 시즌 승패/포인트 제외</span>
             </div>
           </div>}
 
@@ -3782,7 +3782,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
             <div className="rankingSectionHead">
               <div><h3>클럽 랭킹 (통산) <span className="rankingInfo">ⓘ</span></h3></div>
               <div className="rankingSectionMeta">
-                <b>기준: 글로벌 OTR</b>
+                <b>기준: 글로벌 AKTR</b>
                 <span>회원 {memberRanked.length}명</span>
               </div>
             </div>
@@ -3791,7 +3791,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
               <table>
                 <thead>
                   <tr>
-                    <th>순위</th><th>회원명</th><th>OTR</th><th>승</th><th>패</th><th>승률</th><th>경기 수</th>
+                    <th>순위</th><th>회원명</th><th>AKTR</th><th>승</th><th>패</th><th>승률</th><th>경기 수</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -3979,9 +3979,9 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
             <b>클럽</b><p>WKTC (Wellington Korean Tennis Club)</p>
             <b>관리자</b><p>{user?.email}</p>
             <b>클럽 관리자 권한</b><p>{clubAdminAccess?.role==="owner"?"WKTC OWNER":clubAdminAccess?.role==="admin"?"WKTC ADMIN":"권한 없음"}</p>
-            <b>시스템 권한</b><p>{isSystemAdmin?"GLOBAL OTR SYSTEM OWNER":"클럽 운영 권한만 사용"}</p>
+            <b>시스템 권한</b><p>{isSystemAdmin?"GLOBAL AKTR SYSTEM OWNER":"클럽 운영 권한만 사용"}</p>
             <b>공개 권한</b><p>회원은 로그인 없이 조회만 가능</p>
-            <b>점수 명칭</b><p>OTR 2.0 (Open Tennis Rating)</p>
+            <b>점수 명칭</b><p>AKTR 2.0 (Open Tennis Rating)</p>
 
             <b>회원 개인 PIN</b>
             <p>회원 PIN은 클럽별로 따로 저장되고 인증됩니다. WKTC의 정회원 또는 준회원에게는 WKTC용 숫자 4자리 PIN을 설정하세요. 같은 선수가 OPEN COURT나 다른 클럽에서도 같은 번호를 원하면 같은 PIN을 사용할 수 있습니다. 다만 같은 클럽 안에서는 두 회원이 같은 PIN을 사용할 수 없습니다. WKTC PIN으로는 WKTC의 대진 생성 · 경기 결과 입력 · MY PAGE를 인증합니다.</p>
@@ -4038,7 +4038,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
         <section className="surface padded multiClubFoundationPanel">
           <div className="sectionHead">
             <div>
-              <h2>공용 OTR · WKTC 독립 운영</h2>
+              <h2>공용 AKTR · WKTC 독립 운영</h2>
               <small>V11.52 WKTC Launch</small>
             </div>
             <span className="multiClubReadyBadge">{clubFoundationError?"확인 필요":isAdmin?"SECURED":"READY"}</span>
@@ -4049,7 +4049,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
             :<>
               <div className="multiClubStats">
                 <div><small>등록 클럽</small><b>{clubs.length}</b><span>같은 DB 안에서 클럽별 데이터 분리</span></div>
-                <div><small>공용 선수 DB</small><b>{clubFoundationSnapshot?.global_players??"—"}</b><span>글로벌 선수/OTR 원장</span></div>
+                <div><small>공용 선수 DB</small><b>{clubFoundationSnapshot?.global_players??"—"}</b><span>글로벌 선수/AKTR 원장</span></div>
                 <div><small>WKTC 선수 목록</small><b>{clubFoundationSnapshot?.roster_players??members.length}</b><span>이 사이트에서만 사용하는 로스터</span></div>
                 <div><small>WKTC 정회원</small><b>{openCourtRegularCount}</b><span>4개 클럽 전체에서 정회원은 1곳만 가능</span></div>
                 <div><small>WKTC 준회원</small><b>{openCourtAssociateCount}</b><span>일반 화면에서는 회원으로만 표시</span></div>
@@ -4071,25 +4071,25 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
         {isSystemAdmin&&<section className="surface padded otrRebuildPanel">
           <div className="sectionHead otrRebuildHead">
             <div>
-              <h2>OTR 시작점 전체 재설정</h2>
-              <small>시작 OTR을 바꾼 뒤 지금까지의 완료 경기를 처음부터 다시 재생합니다.</small>
+              <h2>AKTR 시작점 전체 재설정</h2>
+              <small>시작 AKTR을 바꾼 뒤 지금까지의 완료 경기를 처음부터 다시 재생합니다.</small>
             </div>
             <button type="button" onClick={loadOtrRebuildEditor} disabled={otrRebuildLoading||otrRebuildBusy}>새로고침</button>
           </div>
 
           <div className="otrRebuildWarning">
             <b>중요</b>
-            <p>이 기능은 단순히 현재 OTR 숫자만 바꾸는 기능이 아닙니다. 각 선수의 새로운 시작 OTR에서 출발해 저장된 모든 완료 경기의 스코어를 날짜·라운드 순서대로 다시 계산합니다. 단식/복식, 시즌/비정규 경기가 모두 포함됩니다.</p>
-            <p>경기 스코어, 승자, 시즌반영 여부, 시즌 기록 자체는 바꾸지 않습니다. 기존 관리자 수동 OTR 조정 이벤트는 새 타임라인에서 제외되며, 실행 직전 상태는 자동 백업됩니다.</p>
+            <p>이 기능은 단순히 현재 AKTR 숫자만 바꾸는 기능이 아닙니다. 각 선수의 새로운 시작 AKTR에서 출발해 저장된 모든 완료 경기의 스코어를 날짜·라운드 순서대로 다시 계산합니다. 단식/복식, 시즌/비정규 경기가 모두 포함됩니다.</p>
+            <p>경기 스코어, 승자, 시즌반영 여부, 시즌 기록 자체는 바꾸지 않습니다. 기존 관리자 수동 AKTR 조정 이벤트는 새 타임라인에서 제외되며, 실행 직전 상태는 자동 백업됩니다.</p>
           </div>
 
           {otrRebuildLoading
-            ?<div className="otrRebuildLoading">시작 OTR 정보를 불러오는 중...</div>
+            ?<div className="otrRebuildLoading">시작 AKTR 정보를 불러오는 중...</div>
             :<>
               <div className="otrSeedTableWrap">
                 <table className="otrSeedTable">
                   <thead>
-                    <tr><th>선수</th><th>현재 OTR</th><th>새 시작 OTR</th><th>미리보기 현재 OTR</th><th>변화</th></tr>
+                    <tr><th>선수</th><th>현재 AKTR</th><th>새 시작 AKTR</th><th>미리보기 현재 AKTR</th><th>변화</th></tr>
                   </thead>
                   <tbody>
                     {otrSeedRows.map(row=>{
@@ -4130,7 +4130,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
                   {otrRebuildBusy?"계산 중...":"1. 재계산 미리보기"}
                 </button>
                 <button type="button" className="primary" onClick={applyOtrRebuild} disabled={otrRebuildBusy||!otrSeedPreview}>
-                  2. 새 OTR 확정 적용
+                  2. 새 AKTR 확정 적용
                 </button>
               </div>
 
@@ -4139,7 +4139,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
                   <b>안전 백업</b>
                   {otrRebuildLastBackup
                     ?<small>최근 재계산: {new Date(otrRebuildLastBackup.created_at).toLocaleString("ko-KR")}{otrRebuildLastBackup.restored_at?" · 이미 되돌림":""}</small>
-                    :<small>아직 OTR 전체 재계산 백업이 없습니다.</small>}
+                    :<small>아직 AKTR 전체 재계산 백업이 없습니다.</small>}
                 </div>
                 <button type="button" onClick={restoreLastOtrRebuild} disabled={otrRebuildBusy||!otrRebuildLastBackup||!!otrRebuildLastBackup.restored_at}>최근 재계산 되돌리기</button>
               </div>
@@ -4220,14 +4220,14 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
           <option value="guest">게스트</option>
         </select></label>
         <div className="membershipModalHint">정회원은 4개 클럽 전체에서 1곳만 가능합니다. 이미 다른 클럽 정회원이면 저장이 거부됩니다. 정회원과 준회원은 일반 회원 화면에서는 모두 '회원'으로 표시됩니다.</div>
-        <label>현재 OTR<input type="number" value={editMemberForm.rating} disabled={!isSystemAdmin} onChange={e=>setEditMemberForm({...editMemberForm,rating:e.target.value})}/></label>
-        {!isSystemAdmin&&<div className="membershipModalHint">글로벌 OTR 수동 변경은 시스템 OWNER만 가능합니다. 클럽 관리자는 경기 결과를 통해서만 OTR을 변경할 수 있습니다.</div>}
+        <label>현재 AKTR<input type="number" value={editMemberForm.rating} disabled={!isSystemAdmin} onChange={e=>setEditMemberForm({...editMemberForm,rating:e.target.value})}/></label>
+        {!isSystemAdmin&&<div className="membershipModalHint">글로벌 AKTR 수동 변경은 시스템 OWNER만 가능합니다. 클럽 관리자는 경기 결과를 통해서만 AKTR을 변경할 수 있습니다.</div>}
         <button className="primary wide">저장</button>
       </form>
     </Modal>}
 
     {editingMatch&&<Modal onClose={()=>setEditingMatch(null)}>
-      <div className="modalHead"><div><h2>경기 기록 수정</h2><p>스코어를 수정하면 승/패와 모든 선수의 OTR을 다시 계산합니다.</p></div><button onClick={()=>setEditingMatch(null)}>×</button></div>
+      <div className="modalHead"><div><h2>경기 기록 수정</h2><p>스코어를 수정하면 승/패와 모든 선수의 AKTR을 다시 계산합니다.</p></div><button onClick={()=>setEditingMatch(null)}>×</button></div>
       <form className="modalForm" onSubmit={saveMatchEdit}>
         <div className="editScoreRow"><label>Team A<input type="number" min="0" value={editScore.a} onChange={e=>setEditScore({...editScore,a:e.target.value})}/></label><b>:</b><label>Team B<input type="number" min="0" value={editScore.b} onChange={e=>setEditScore({...editScore,b:e.target.value})}/></label></div>
         <button className="primary wide">수정 저장</button>
@@ -4252,7 +4252,7 @@ function PersonPicker({members,value,onChange,placeholder="이름 선택",showRa
   return <div className="personPicker">
     <button type="button" className={selected?"personPickerTrigger selected":"personPickerTrigger"} onClick={()=>setOpen(true)}>
       <span>{selected?selected.name:placeholder}</span>
-      {selected&&showRating&&<small>{selected.rating} OTR</small>}
+      {selected&&showRating&&<small>{selected.rating} AKTR</small>}
       <em>⌄</em>
     </button>
 
@@ -4280,7 +4280,7 @@ function PersonPicker({members,value,onChange,placeholder="이름 선택",showRa
           {filtered.map(m=><button type="button" key={m.id} className={m.id===value?"personPickerOption active":"personPickerOption"} onClick={()=>choose(m.id)}>
             <span className="personPickerAvatar">{m.name?.[0]||"?"}</span>
             <b>{m.name}</b>
-            <small>{(m.member_type||"member")==="guest"?"게스트":"회원"}{showRating?` · ${m.rating} OTR`:""}</small>
+            <small>{(m.member_type||"member")==="guest"?"게스트":"회원"}{showRating?` · ${m.rating} AKTR`:""}</small>
             {m.id===value&&<em>✓</em>}
           </button>)}
           {!filtered.length&&<div className="personPickerEmpty">검색된 이름이 없습니다.</div>}
@@ -4291,8 +4291,8 @@ function PersonPicker({members,value,onChange,placeholder="이름 선택",showRa
 }
 
 function Metric({icon,label,value,unit,desc}){return <div className="metric"><span className="metricIcon">{icon}</span><div><small>{label}</small><div className="metricValue">{value}<em>{unit}</em></div><p>{desc}</p></div></div>}
-function RankRow({member,rank,onOpen}){const n=member.wins+member.losses;return <div className="rankRow"><span className={"rankBadge r"+rank}>{rank}</span><div className="rankInfo"><button className="nameLink" onClick={()=>onOpen(member.id)}>{member.name}</button><small>승률 {n?Math.round(member.wins/n*100):0}% ({member.wins}승 {member.losses}패)</small></div><div className="rankPoints"><b>{member.rating.toLocaleString()}</b><small>OTR</small></div></div>}
-function Team({title,p,onOpenProfile,seasonMatch=false,creditFor=null}){return <div className={`team ${title==="TEAM A"?"teamA":"teamB"}`}><div className="teamHeader"><small>{title}</small><span>같은 팀</span></div><div className="teamPlayers">{(p||[]).filter(Boolean).map(x=>{const credited=!seasonMatch||!creditFor||creditFor(x.id);return <div className="player" key={x.id}><span className="avatar">{x.name[0]}</span><div className="pendingPlayerNameRow">{onOpenProfile?<button className="teamNameLink" onClick={()=>onOpenProfile(x.id)}>{x.name}</button>:<b>{x.name}</b>}{seasonMatch&&<span className={credited?"pendingSeasonCreditBadge credited":"pendingSeasonCreditBadge helper"}>{credited?"시즌반영":"보조출전"}</span>}</div><em>{x.rating} OTR</em></div>})}</div></div>}
+function RankRow({member,rank,onOpen}){const n=member.wins+member.losses;return <div className="rankRow"><span className={"rankBadge r"+rank}>{rank}</span><div className="rankInfo"><button className="nameLink" onClick={()=>onOpen(member.id)}>{member.name}</button><small>승률 {n?Math.round(member.wins/n*100):0}% ({member.wins}승 {member.losses}패)</small></div><div className="rankPoints"><b>{member.rating.toLocaleString()}</b><small>AKTR</small></div></div>}
+function Team({title,p,onOpenProfile,seasonMatch=false,creditFor=null}){return <div className={`team ${title==="TEAM A"?"teamA":"teamB"}`}><div className="teamHeader"><small>{title}</small><span>같은 팀</span></div><div className="teamPlayers">{(p||[]).filter(Boolean).map(x=>{const credited=!seasonMatch||!creditFor||creditFor(x.id);return <div className="player" key={x.id}><span className="avatar">{x.name[0]}</span><div className="pendingPlayerNameRow">{onOpenProfile?<button className="teamNameLink" onClick={()=>onOpenProfile(x.id)}>{x.name}</button>:<b>{x.name}</b>}{seasonMatch&&<span className={credited?"pendingSeasonCreditBadge credited":"pendingSeasonCreditBadge helper"}>{credited?"시즌반영":"보조출전"}</span>}</div><em>{x.rating} AKTR</em></div>})}</div></div>}
 function RecentMatches({matches,memberMap,onOpenProfile}){
   if(!matches.length)return <div className="emptyRow">아직 저장된 경기가 없습니다.</div>;
   return <div className="recentMatchList">{matches.map(m=>{
@@ -4487,14 +4487,14 @@ function MemberProfile({member,matches,sessions,memberMap,events,seasons,onOpenP
       if(e.member_id!==member.id)return false;
 
       // 그래프만 2026-08-16 이후 기록을 표시.
-      // 경기 전적/승패/시즌 기록/OTR 현재값에는 영향을 주지 않음.
+      // 경기 전적/승패/시즌 기록/AKTR 현재값에는 영향을 주지 않음.
       const graphDate=eventDateKey(e).slice(0,10);
       if(!graphDate||graphDate<graphStartDate)return false;
 
-      // 관리자 수동 OTR 조정도 시작일 이후 기록만 그래프에 표시.
+      // 관리자 수동 AKTR 조정도 시작일 이후 기록만 그래프에 표시.
       if(e.event_type==="manual")return true;
 
-      // 경기 OTR 변화는 실제 결과가 확정된 경기만 표시.
+      // 경기 AKTR 변화는 실제 결과가 확정된 경기만 표시.
       if(e.event_type==="match"){
         const match=e.match_id?matchById[e.match_id]:null;
         return !!(
@@ -4558,7 +4558,7 @@ function MemberProfile({member,matches,sessions,memberMap,events,seasons,onOpenP
     <div className="profileTop">
       <section className="surface padded profileSummary">
         <span className="bigAvatar">{member.name[0]}</span><div><h2>{member.name}</h2><p>{(member.member_type||"member")==="guest"?"게스트":"회원"} · {member.gender==="M"?"남성":"여성"} · {member.active===false?"비활동":"활동중"}</p></div>
-        <div className="profileOtr"><small>현재 OTR</small><b>{member.rating.toLocaleString()}</b></div>
+        <div className="profileOtr"><small>현재 AKTR</small><b>{member.rating.toLocaleString()}</b></div>
       </section>
       <div className="profileMetrics"><div><small>경기</small><b>{n}</b></div><div><small>승</small><b>{member.wins}</b></div><div><small>패</small><b>{member.losses}</b></div><div><small>승률</small><b>{n?Math.round(member.wins/n*100):0}%</b></div></div>
     </div>
@@ -4602,7 +4602,7 @@ function MemberProfile({member,matches,sessions,memberMap,events,seasons,onOpenP
     </section>
 
     <section className="surface padded">
-      <div className="sectionHead"><h2>OTR 변화 그래프</h2><span>2026-08-16 이후 · 실제 OTR 증감 기준</span></div>
+      <div className="sectionHead"><h2>AKTR 변화 그래프</h2><span>2026-08-16 이후 · 실제 AKTR 증감 기준</span></div>
       <OtrChart
         events={memberEvents.map(e=>{
           const match=e.match_id?matchById[e.match_id]:null;
@@ -4689,7 +4689,7 @@ function MemberProfile({member,matches,sessions,memberMap,events,seasons,onOpenP
               <span> · {s?.session_date||""}</span>
             </small>
           </div>
-          <div className="profileScore"><b>{m.score_a!=null?`${m.score_a}-${m.score_b}`:"-"}</b><span className={(event?.delta||0)>=0?"delta plus":"delta minus"}>{event?`${event.delta>=0?"+":""}${event.delta} OTR`:"-"}</span></div>
+          <div className="profileScore"><b>{m.score_a!=null?`${m.score_a}-${m.score_b}`:"-"}</b><span className={(event?.delta||0)>=0?"delta plus":"delta minus"}>{event?`${event.delta>=0?"+":""}${event.delta} AKTR`:"-"}</span></div>
         </div>
       })}{!filteredMemberMatches.length&&<div className="emptyState">{matchFilter==="all"?"아직 경기 기록이 없습니다.":matchFilter==="friendly"?"비정규 경기 기록이 없습니다.":"시즌 경기 기록이 없습니다."}</div>}</div>
     </section>
@@ -4699,7 +4699,7 @@ function OtrChart({events,current}){
   const points=events.slice(-20);
 
   if(!points.length){
-    return <div className="chartEmpty"><b>{current} OTR</b><span>아직 OTR 변화 기록이 없습니다.</span></div>;
+    return <div className="chartEmpty"><b>{current} AKTR</b><span>아직 AKTR 변화 기록이 없습니다.</span></div>;
   }
 
   /*
@@ -4709,10 +4709,10 @@ function OtrChart({events,current}){
    * could become non-contiguous even though each event's delta was correct.
    *
    * Rebuild the line from the actual event deltas and anchor the LAST point
-   * to the member's current OTR. This guarantees:
+   * to the member's current AKTR. This guarantees:
    * - +delta always moves upward
    * - -delta always moves downward
-   * - the final point is exactly the current OTR shown on the profile
+   * - the final point is exactly the current AKTR shown on the profile
    */
   const deltas=points.map(e=>Number(e.delta||0));
   const reconstructed=[0];
@@ -4736,7 +4736,7 @@ function OtrChart({events,current}){
   const poly=coords.map(p=>p.join(",")).join(" ");
 
   return <div className="chartWrap">
-    <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`현재 OTR ${current}. 최근 OTR 변화`}>
+    <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`현재 AKTR ${current}. 최근 AKTR 변화`}>
       <line x1={pad} y1={h-pad} x2={w-pad} y2={h-pad} className="axis"/>
       <polyline points={poly} fill="none" className="otrLine"/>
       {coords.map((p,i)=><circle key={i} cx={p[0]} cy={p[1]} r="4" className="otrDot"/>)}
@@ -4748,7 +4748,7 @@ function OtrChart({events,current}){
       {points.slice(-8).map(e=><span key={e.id} className={Number(e.delta)>=0?"plus":"minus"}>
         <small>{e.display_date?e.display_date.slice(5).replace("-","/"):""}</small>
         {e.result&&<b className={`resultMini ${e.result==="W"?"win":"loss"}`}>{e.result}</b>}
-        {Number(e.delta)>=0?"+":""}{Number(e.delta)} OTR
+        {Number(e.delta)>=0?"+":""}{Number(e.delta)} AKTR
       </span>)}
     </div>
   </div>;
