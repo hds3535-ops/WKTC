@@ -4457,11 +4457,38 @@ function History({seasons,sessions,matches,memberMap,isAdmin,onEdit,onDelete,otr
 }
 function MemberProfile({member,matches,sessions,memberMap,events,seasons,onOpenProfile}){
   const[matchFilter,setMatchFilter]=useState("all");
+  const[globalMatchHistory,setGlobalMatchHistory]=useState([]);
+  const[globalMatchHistoryBusy,setGlobalMatchHistoryBusy]=useState(false);
+
+  useEffect(()=>{
+    let active=true;
+    if(!member?.id||!supabase){
+      setGlobalMatchHistory([]);
+      return()=>{active=false};
+    }
+
+    setGlobalMatchHistoryBusy(true);
+    supabase.rpc("mkta_player_match_history",{p_member_id:member.id}).then(({data,error})=>{
+      if(!active)return;
+      if(error){
+        console.error("통합 경기전적 불러오기 실패",error);
+        setGlobalMatchHistory([]);
+      }else{
+        setGlobalMatchHistory(data||[]);
+      }
+      setGlobalMatchHistoryBusy(false);
+    });
+
+    return()=>{active=false};
+  },[member?.id]);
+
   if(!member)return <section className="surface padded"><div className="emptyState">회원 정보를 찾을 수 없습니다.</div></section>;
+
   const memberMatches=matches.filter(m=>[m.team_a_member_1,m.team_a_member_2,m.team_b_member_1,m.team_b_member_2].includes(member.id));
-  const filteredMemberMatches=memberMatches.filter(m=>{
+  const filteredGlobalMatches=globalMatchHistory.filter(m=>{
     if(matchFilter==="all")return true;
-    return sessions[m.session_id]?.match_type===matchFilter;
+    if(matchFilter==="mkta")return m.source_type==="mkta";
+    return m.source_type==="club"&&m.match_type===matchFilter;
   });
   const matchById=Object.fromEntries(matches.map(m=>[m.id,m]));
   function eventDateKey(e){
@@ -4567,7 +4594,7 @@ function MemberProfile({member,matches,sessions,memberMap,events,seasons,onOpenP
       <div className="sectionHead">
         <div>
           <h2>플레이 관계</h2>
-          <small>완료된 전체 경기 기준</small>
+          <small>현재 클럽에서 완료된 경기 기준</small>
         </div>
       </div>
       <div className="profileRelationshipGrid">
@@ -4650,48 +4677,91 @@ function MemberProfile({member,matches,sessions,memberMap,events,seasons,onOpenP
     <section className="surface padded">
       <div className="sectionHead profileHistoryHead">
         <div>
-          <h2>최근 경기 전적</h2>
-          <small>{matchFilter==="all"?`전체 ${memberMatches.length}경기`:matchFilter==="friendly"?`비정규 ${filteredMemberMatches.length}경기`:`시즌 ${filteredMemberMatches.length}경기`}</small>
+          <h2>전체 경기 전적</h2>
+          <small>
+            {matchFilter==="all"
+              ?`전체 ${globalMatchHistory.length}경기`
+              :matchFilter==="friendly"
+                ?`비정규 ${filteredGlobalMatches.length}경기`
+                :matchFilter==="season"
+                  ?`시즌 ${filteredGlobalMatches.length}경기`
+                  :`MKTA ${filteredGlobalMatches.length}경기`}
+          </small>
         </div>
         <div className="historyFilters profileHistoryFilters">
           <button className={matchFilter==="all"?"historyFilterBtn active":"historyFilterBtn"} onClick={()=>setMatchFilter("all")}>전체</button>
           <button className={matchFilter==="friendly"?"historyFilterBtn active":"historyFilterBtn"} onClick={()=>setMatchFilter("friendly")}>비정규</button>
           <button className={matchFilter==="season"?"historyFilterBtn active":"historyFilterBtn"} onClick={()=>setMatchFilter("season")}>시즌</button>
+          <button className={matchFilter==="mkta"?"historyFilterBtn active":"historyFilterBtn"} onClick={()=>setMatchFilter("mkta")}>MKTA</button>
         </div>
       </div>
-      <div className="profileMatchList">{filteredMemberMatches.slice(0,12).map(m=>{
-        const isA=[m.team_a_member_1,m.team_a_member_2].includes(member.id);
-        const partnerId=isA?(m.team_a_member_1===member.id?m.team_a_member_2:m.team_a_member_1):(m.team_b_member_1===member.id?m.team_b_member_2:m.team_b_member_1);
-        const oppIds=isA?[m.team_b_member_1,m.team_b_member_2]:[m.team_a_member_1,m.team_a_member_2];
-        const event=events.find(e=>e.match_id===m.id&&e.member_id===member.id);
-        const won=m.winner&&(isA?m.winner==="A":m.winner==="B");
-        const s=sessions[m.session_id];
-        return <div className="profileMatch" key={m.id}>
-          <span className={won?"wl win":"wl loss"}>{m.winner?(won?"W":"L"):"-"}</span>
-          <div>
-            <span className={s?.match_type==="season"?"profileMatchType season":"profileMatchType friendly"}>{s?.match_type==="season"?"시즌경기":"비정규"}</span>
-            <b>
-              {m.match_format==="singles"
-                ?"단식"
-                :memberMap[partnerId]
-                  ?<><button className="profileNameLink" onClick={()=>onOpenProfile(memberMap[partnerId].id)}>{memberMap[partnerId].name}</button><span>와 함께</span></>
-                  :"-"}
-            </b>
-            <small className="profileOpponents">
-              <span>vs </span>
-              {oppIds.filter(Boolean).map((id,idx)=>{
-                const opp=memberMap[id];
-                return <React.Fragment key={id}>
-                  {opp?<button className="profileNameLink small" onClick={()=>onOpenProfile(opp.id)}>{opp.name}</button>:"-"}
-                  {idx<oppIds.filter(Boolean).length-1&&<span> + </span>}
-                </React.Fragment>
-              })}
-              <span> · {s?.session_date||""}</span>
-            </small>
-          </div>
-          <div className="profileScore"><b>{m.score_a!=null?`${m.score_a}-${m.score_b}`:"-"}</b><span className={(event?.delta||0)>=0?"delta plus":"delta minus"}>{event?`${event.delta>=0?"+":""}${event.delta} AKTR`:"-"}</span></div>
-        </div>
-      })}{!filteredMemberMatches.length&&<div className="emptyState">{matchFilter==="all"?"아직 경기 기록이 없습니다.":matchFilter==="friendly"?"비정규 경기 기록이 없습니다.":"시즌 경기 기록이 없습니다."}</div>}</div>
+
+      <div className="globalClubHistoryNote">
+        OCTC · MKTC · VKTC · WKTC 클럽 경기와 MKTA 공식 이벤트 경기를 날짜순으로 함께 표시합니다.
+      </div>
+
+      {globalMatchHistoryBusy
+        ?<div className="emptyState">전체 경기 전적을 불러오는 중입니다.</div>
+        :<div className="globalClubMatchList">
+          {filteredGlobalMatches.map((m,idx)=>{
+            const partner=memberMap[m.partner_id];
+            const opp1=memberMap[m.opponent_1_id];
+            const opp2=memberMap[m.opponent_2_id];
+            const source=String(m.source_name||"").toUpperCase();
+            return <div className="globalClubMatch" key={`${m.source_type}-${m.match_id}-${idx}`}>
+              <span className={m.won===true?"wl win":m.won===false?"wl loss":"wl"}>{m.won===true?"W":m.won===false?"L":"-"}</span>
+
+              <div className="globalClubMatchMain">
+                <div className="globalClubMatchTop">
+                  <span className={`globalSourceBadge source-${source.toLowerCase()}`}>{source||"CLUB"}</span>
+                  <span className="globalCompetition">{m.competition||"공식 경기"}</span>
+                </div>
+
+                <b className="globalPartnerLine">
+                  {m.match_format==="singles"
+                    ?"단식"
+                    :m.partner_name
+                      ?<>
+                        {partner
+                          ?<button className="profileNameLink" onClick={()=>onOpenProfile(partner.id)}>{m.partner_name}</button>
+                          :<span>{m.partner_name}</span>}
+                        <span>와 함께</span>
+                      </>
+                      :"-"}
+                </b>
+
+                <small className="profileOpponents globalOpponents">
+                  <span>vs </span>
+                  {m.opponent_1_name
+                    ?opp1
+                      ?<button className="profileNameLink small" onClick={()=>onOpenProfile(opp1.id)}>{m.opponent_1_name}</button>
+                      :<strong>{m.opponent_1_name}</strong>
+                    :<strong>-</strong>}
+                  {m.opponent_2_name&&<>
+                    <span> + </span>
+                    {opp2
+                      ?<button className="profileNameLink small" onClick={()=>onOpenProfile(opp2.id)}>{m.opponent_2_name}</button>
+                      :<strong>{m.opponent_2_name}</strong>}
+                  </>}
+                  <span> · {m.played_date||""}{m.played_time?` ${String(m.played_time).slice(0,5)}`:""}</span>
+                </small>
+
+                {m.source_type==="mkta"&&m.team_for&&m.team_against&&
+                  <small className="globalEventTeams">{m.team_for} vs {m.team_against}</small>}
+              </div>
+
+              <div className="profileScore globalProfileScore">
+                <b>{m.score_for!=null&&m.score_against!=null?`${m.score_for}-${m.score_against}`:"-"}</b>
+                <span className={Number(m.aktr_delta||0)>=0?"delta plus":"delta minus"}>
+                  {m.aktr_delta==null?"AKTR -":`${Number(m.aktr_delta)>=0?"+":""}${m.aktr_delta} AKTR`}
+                </span>
+              </div>
+            </div>
+          })}
+          {!filteredGlobalMatches.length&&<div className="emptyState">
+            {matchFilter==="all"?"아직 경기 기록이 없습니다.":matchFilter==="mkta"?"MKTA 경기 기록이 없습니다.":matchFilter==="friendly"?"비정규 경기 기록이 없습니다.":"시즌 경기 기록이 없습니다."}
+          </div>}
+        </div>}
     </section>
   </>;
 }

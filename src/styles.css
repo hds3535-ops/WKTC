@@ -10761,3 +10761,136 @@ body:has(.wktcApp){background:#f7ede1 !important}
     background:transparent !important;
   }
 }
+
+
+/* =========================================================
+   V11.65 — GLOBAL PLAYER MATCH HISTORY
+   OCTC + MKTC + VKTC + WKTC + MKTA
+   ========================================================= */
+.globalClubHistoryNote{
+  margin:-7px 0 14px;
+  padding:9px 11px;
+  border-radius:10px;
+  background:#f6f8fa;
+  color:#718096;
+  font-size:10px;
+  line-height:1.55;
+}
+.globalClubMatchList{
+  display:grid;
+  gap:8px;
+}
+.globalClubMatch{
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr) 100px;
+  gap:12px;
+  align-items:center;
+  padding:12px 13px;
+  border:1px solid #e4e9ef;
+  border-radius:13px;
+  background:#fff;
+}
+.globalClubMatchMain{
+  min-width:0;
+}
+.globalClubMatchTop{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-bottom:5px;
+}
+.globalSourceBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:43px;
+  padding:4px 7px;
+  border-radius:999px;
+  color:#fff;
+  font-size:8px;
+  font-weight:900;
+  line-height:1;
+}
+.globalSourceBadge.source-octc{background:#748c27}
+.globalSourceBadge.source-mktc{background:#7b2d43}
+.globalSourceBadge.source-vktc{background:#4a9fd5}
+.globalSourceBadge.source-wktc{background:#b75f18}
+.globalSourceBadge.source-mkta{background:#123b63;color:#f2c76f}
+.globalCompetition{
+  color:#6f7e8e;
+  font-size:9px;
+  font-weight:800;
+}
+.globalPartnerLine{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  flex-wrap:wrap;
+  margin-bottom:4px;
+  color:#283f55;
+}
+.globalPartnerLine span{
+  white-space:normal;
+}
+.globalOpponents{
+  display:flex;
+  align-items:center;
+  gap:3px;
+  flex-wrap:wrap;
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+}
+.globalOpponents strong,
+.globalOpponents button{
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  max-width:none !important;
+}
+.globalEventTeams{
+  display:block;
+  margin-top:4px;
+  color:#7a8795;
+  font-size:9px;
+  font-weight:800;
+}
+.globalProfileScore{
+  text-align:right;
+}
+.globalProfileScore>b{
+  display:block;
+  font-size:17px;
+}
+.globalProfileScore>span{
+  display:block;
+  margin-top:4px;
+  font-size:9px;
+  font-weight:900;
+}
+
+@media(max-width:720px){
+  .globalClubMatch{
+    grid-template-columns:34px minmax(0,1fr);
+    gap:9px;
+  }
+  .globalProfileScore{
+    grid-column:2;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding-top:6px;
+    border-top:1px solid #edf1f4;
+    text-align:left;
+  }
+  .globalProfileScore>span{
+    margin:0;
+  }
+  .globalClubMatchTop,
+  .globalPartnerLine,
+  .globalOpponents{
+    max-width:100%;
+  }
+}
