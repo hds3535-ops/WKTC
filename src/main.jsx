@@ -749,7 +749,11 @@ function App(){
 
   const isAdmin=!!user&&!!clubAdminAccess?.allowed;
   const isSystemAdmin=!!user&&!!clubAdminAccess?.system_admin;
-  const nav=isAdmin?ADMIN_NAV:PUBLIC_NAV;
+  const rankingPublic=clubSiteSettings?.features?.ranking_public!==false;
+  const canViewClubRanking=isAdmin||rankingPublic;
+  const nav=isAdmin
+    ?ADMIN_NAV
+    :PUBLIC_NAV.filter(x=>x[0]!=="ranking"||rankingPublic);
   const activeMembers=useMemo(()=>members.filter(m=>m.active!==false),[members]);
   const clubMap=useMemo(()=>Object.fromEntries((clubs||[]).map(c=>[c.id,c])),[clubs]);
 
@@ -995,8 +999,11 @@ function App(){
   },[authReady,user?.id,loginBusy]);
 
   useEffect(()=>{
-    if(authReady&&adminAccessReady&&!isAdmin&&["members","settings"].includes(tab))navigate("home",null,true);
-  },[authReady,adminAccessReady,isAdmin]);
+    if(!authReady||!adminAccessReady)return;
+    const protectedAdminPage=!isAdmin&&["members","settings"].includes(tab);
+    const privateRankingPage=!isAdmin&&!rankingPublic&&tab==="ranking";
+    if(protectedAdminPage||privateRankingPage)navigate("home",null,true);
+  },[authReady,adminAccessReady,isAdmin,rankingPublic,tab]);
 
   useEffect(()=>{
     if(!supabase||!authReady)return;
@@ -2259,6 +2266,35 @@ function App(){
     flash(`${player.name} 선수를 WKTC ${label}으로 연결했습니다.`);
   }
 
+  async function saveClubRankingVisibility(nextPublic){
+    if(!requireAdmin())return;
+
+    const currentFeatures=clubSiteSettings?.features&&typeof clubSiteSettings.features==="object"
+      ?clubSiteSettings.features
+      :{};
+    const nextFeatures={...currentFeatures,ranking_public:!!nextPublic};
+
+    const{data,error}=await supabase
+      .from("club_site_settings")
+      .update({
+        features:nextFeatures,
+        updated_at:new Date().toISOString()
+      })
+      .eq("club_id",CURRENT_CLUB_ID)
+      .select("*")
+      .maybeSingle();
+
+    if(error){
+      alert("클럽 랭킹 공개 설정 저장 실패: "+error.message);
+      return;
+    }
+
+    setClubSiteSettings(data||{...(clubSiteSettings||{}),club_id:CURRENT_CLUB_ID,features:nextFeatures});
+    flash(nextPublic
+      ?"WKTC 클럽 랭킹을 전체 공개로 변경했습니다."
+      :"WKTC 클럽 랭킹을 비공개(관리자 전용)로 변경했습니다.");
+  }
+
   async function addMember(e){
     e.preventDefault();
     if(!requireAdmin()||!form.name.trim())return;
@@ -3139,7 +3175,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
             </article>
           </section>
 
-          <section className="mockLowerGrid">
+          <section className={canViewClubRanking?"mockLowerGrid":"mockLowerGrid rankingHidden"}>
             <article className="mockCard mockEvents">
               <div className="mockCardHead">
                 <h2>클럽 행사</h2>
@@ -3192,7 +3228,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
               <button className="mockOutlineButton" onClick={()=>navigate("draw")}>▤ 기록 더 보기</button>
             </article>
 
-            <div className="mockRankColumn mockRankColumnSimple">
+            {canViewClubRanking&&<div className="mockRankColumn mockRankColumnSimple">
               <article className="mockCard mockCombinedHomeRank wktcHomeRankOnly">
                 <section className="mockCombinedRankSection">
                   <div className="mockCardHead mockRankSectionHead">
@@ -3209,7 +3245,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
                   </div>
                 </section>
               </article>
-            </div>
+            </div>}
           </section>
 
           <section className="mockFooterStrip">
@@ -3770,7 +3806,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
         />
       </section>}
 
-      {tab==="ranking"&&<div className="rankingPage exactRankingPage">
+      {tab==="ranking"&&canViewClubRanking&&<div className="rankingPage exactRankingPage">
         <section className="rankingCombinedCard">
           <div className="rankingTopBar">
             <div className="rankingTopTabs">
@@ -3985,6 +4021,38 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
 
             <b>회원 개인 PIN</b>
             <p>회원 PIN은 클럽별로 따로 저장되고 인증됩니다. WKTC의 정회원 또는 준회원에게는 WKTC용 숫자 4자리 PIN을 설정하세요. 같은 선수가 OPEN COURT나 다른 클럽에서도 같은 번호를 원하면 같은 PIN을 사용할 수 있습니다. 다만 같은 클럽 안에서는 두 회원이 같은 PIN을 사용할 수 없습니다. WKTC PIN으로는 WKTC의 대진 생성 · 경기 결과 입력 · MY PAGE를 인증합니다.</p>
+          </div>
+        </section>
+
+        <section className="surface padded rankingPrivacyPanel">
+          <div className="sectionHead">
+            <div>
+              <h2>클럽 랭킹 공개 설정</h2>
+              <small>WKTC 클럽 랭킹을 일반 방문자에게 공개할지 선택합니다.</small>
+            </div>
+            <span className={rankingPublic?"rankingPrivacyBadge public":"rankingPrivacyBadge private"}>
+              {rankingPublic?"전체 공개":"비공개"}
+            </span>
+          </div>
+
+          <div className="rankingPrivacyOptions">
+            <button
+              type="button"
+              className={rankingPublic?"rankingPrivacyOption active": "rankingPrivacyOption"}
+              onClick={()=>saveClubRankingVisibility(true)}
+            >
+              <b>전체 공개</b>
+              <span>로그인하지 않은 방문자도 홈 TOP5와 클럽 랭킹 메뉴를 볼 수 있습니다.</span>
+            </button>
+
+            <button
+              type="button"
+              className={!rankingPublic?"rankingPrivacyOption active": "rankingPrivacyOption"}
+              onClick={()=>saveClubRankingVisibility(false)}
+            >
+              <b>비공개</b>
+              <span>관리자만 홈 TOP5와 클럽 랭킹 페이지를 볼 수 있습니다.</span>
+            </button>
           </div>
         </section>
 

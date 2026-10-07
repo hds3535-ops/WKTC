@@ -10894,3 +10894,78 @@ body:has(.wktcApp){background:#f7ede1 !important}
     max-width:100%;
   }
 }
+
+
+/* =========================================================
+   V11.66 — WKTC CLUB RANKING PRIVACY
+   ========================================================= */
+.mockLowerGrid.rankingHidden{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+.rankingPrivacyPanel{
+  border-color:#ead8c2 !important;
+}
+.rankingPrivacyBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:72px;
+  padding:7px 10px;
+  border-radius:999px;
+  font-size:9px;
+  font-weight:950;
+}
+.rankingPrivacyBadge.public{
+  background:#e8f5ea;
+  color:#2e7042;
+}
+.rankingPrivacyBadge.private{
+  background:#f6e8df;
+  color:#944212;
+}
+.rankingPrivacyOptions{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.rankingPrivacyOption{
+  display:grid;
+  gap:6px;
+  min-height:102px;
+  padding:16px;
+  border:1px solid #e1d4c5;
+  border-radius:14px;
+  background:#fffdf9;
+  color:#4a2817;
+  text-align:left;
+}
+.rankingPrivacyOption b{
+  font-size:15px;
+}
+.rankingPrivacyOption span{
+  color:#786d73;
+  font-size:10px;
+  line-height:1.55;
+}
+.rankingPrivacyOption.active{
+  border:2px solid #b75f18;
+  background:#fff6e9;
+  box-shadow:0 5px 18px rgba(104,50,14,.08);
+}
+.rankingPrivacyOption.active b{
+  color:#944212;
+}
+
+@media(min-width:721px) and (max-width:1080px){
+  .mockLowerGrid.rankingHidden{
+    grid-template-columns:1fr 1fr;
+  }
+}
+@media(max-width:720px){
+  .rankingPrivacyOptions{
+    grid-template-columns:1fr;
+  }
+  .mockLowerGrid.rankingHidden{
+    display:block;
+  }
+}
