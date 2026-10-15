@@ -680,7 +680,6 @@ function App(){
   const[currentSeasonId,setCurrentSeasonId]=useState(null);
   const[seasonView,setSeasonView]=useState(null);
   const[rankView,setRankView]=useState("club");
-  const[showAllClubRank,setShowAllClubRank]=useState(false);
   const[showAllSeasonRank,setShowAllSeasonRank]=useState(false);
   const[historyFilter,setHistoryFilter]=useState("all");
   const[matchType,setMatchType]=useState("friendly");
@@ -3175,7 +3174,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
             </article>
           </section>
 
-          <section className={canViewClubRanking?"mockLowerGrid":"mockLowerGrid rankingHidden"}>
+          <section className="mockLowerGrid rankingHidden">
             <article className="mockCard mockEvents">
               <div className="mockCardHead">
                 <h2>클럽 행사</h2>
@@ -3228,23 +3227,6 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
               <button className="mockOutlineButton" onClick={()=>navigate("draw")}>▤ 기록 더 보기</button>
             </article>
 
-            {canViewClubRanking&&<div className="mockRankColumn mockRankColumnSimple">
-              <article className="mockCard mockCombinedHomeRank wktcHomeRankOnly">
-                <section className="mockCombinedRankSection">
-                  <div className="mockCardHead mockRankSectionHead">
-                    <div className="mockRankTitleWrap"><h2>WKTC 클럽회원</h2></div>
-                    <button onClick={()=>navigate("ranking")}>전체 보기 ›</button>
-                  </div>
-                  <div className="mockRankRows homeFive">
-                    {mockHomeClubRows.map(m=><div className="clubMemberHomeRow" key={m.id}>
-                      <button onClick={()=>openProfile(m.id)}>{m.name}</button>
-                      <b>{m.rating.toLocaleString()} AKTR</b>
-                    </div>)}
-                    {!mockHomeClubRows.length&&<div className="mockRankEmpty">표시할 클럽회원이 없습니다.</div>}
-                  </div>
-                </section>
-              </article>
-            </div>}
           </section>
 
           <section className="mockFooterStrip">
@@ -3830,7 +3812,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
                   </tr>
                 </thead>
                 <tbody>
-                  {(showAllClubRank?memberRanked:memberRanked.slice(0,6)).map(m=>{
+                  {memberRanked.map(m=>{
                     const n=m.wins+m.losses;
                     return <tr key={m.id}>
                       <td className="memberCell"><button className="nameLink" onClick={()=>openProfile(m.id)}>{m.name}</button></td>
@@ -3845,11 +3827,6 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
               </table>
             </div>
 
-            {memberRanked.length>6&&<div className="rankingMoreWrap">
-              <button className="rankingMoreBtn" onClick={()=>setShowAllClubRank(v=>!v)}>
-                {showAllClubRank?"처음 6명만 보기":"전체 클럽회원 보기"} <span>{showAllClubRank?"↑":"→"}</span>
-              </button>
-            </div>}
           </div>
         </section>
       </div>}
