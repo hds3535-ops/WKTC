@@ -11,7 +11,7 @@ const PUBLIC_NAV=[
   ["schedule","예정된 게임",""],
   ["mypage","MY PAGE",""],
   ["events","클럽 행사",""],
-  ["ranking","클럽 랭킹","▥"],
+  ["ranking","클럽회원","▥"],
   ["session","대진 만들기","＋"],
   ["draw","경기 기록","♜"],
 ];
@@ -20,7 +20,7 @@ const ADMIN_NAV=[
   ["schedule","예정된 게임",""],
   ["mypage","MY PAGE",""],
   ["events","클럽 행사",""],
-  ["ranking","클럽 랭킹","▥"],
+  ["ranking","클럽회원","▥"],
   ["session","대진표 만들기","▣"],
   ["draw","경기 기록","♜"],
   ["members","회원 목록","♙"],
@@ -826,7 +826,7 @@ function App(){
   const ranked=useMemo(()=>[...activeMembers].sort((a,b)=>b.rating-a.rating),[activeMembers]);
   const memberRanked=useMemo(()=>activeMembers
     .filter(m=>publicMemberType(m)==="member")
-    .sort((a,b)=>b.rating-a.rating),[activeMembers,clubPublicStatuses,clubFoundationLoaded]);
+    .sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"ko",{sensitivity:"base"})),[activeMembers,clubPublicStatuses,clubFoundationLoaded]);
   const pickerMembers=useMemo(
     ()=>activeMembers.map(m=>({...m,member_type:publicMemberType(m)})),
     [activeMembers,clubPublicStatuses,clubFoundationLoaded]
@@ -2285,14 +2285,14 @@ function App(){
       .maybeSingle();
 
     if(error){
-      alert("클럽 랭킹 공개 설정 저장 실패: "+error.message);
+      alert("클럽회원 공개 설정 저장 실패: "+error.message);
       return;
     }
 
     setClubSiteSettings(data||{...(clubSiteSettings||{}),club_id:CURRENT_CLUB_ID,features:nextFeatures});
     flash(nextPublic
-      ?"WKTC 클럽 랭킹을 전체 공개로 변경했습니다."
-      :"WKTC 클럽 랭킹을 비공개(관리자 전용)로 변경했습니다.");
+      ?"WKTC 클럽회원 목록을 전체 공개로 변경했습니다."
+      :"WKTC 클럽회원 목록을 비공개(관리자 전용)로 변경했습니다.");
   }
 
   async function addMember(e){
@@ -3232,16 +3232,15 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
               <article className="mockCard mockCombinedHomeRank wktcHomeRankOnly">
                 <section className="mockCombinedRankSection">
                   <div className="mockCardHead mockRankSectionHead">
-                    <div className="mockRankTitleWrap"><h2>WKTC 랭킹 TOP5</h2></div>
+                    <div className="mockRankTitleWrap"><h2>WKTC 클럽회원</h2></div>
                     <button onClick={()=>navigate("ranking")}>전체 보기 ›</button>
                   </div>
                   <div className="mockRankRows homeFive">
-                    {mockHomeClubRows.map((m,i)=><div key={m.id}>
-                      <span className={`n${i+1}`}>{i+1}</span>
+                    {mockHomeClubRows.map(m=><div className="clubMemberHomeRow" key={m.id}>
                       <button onClick={()=>openProfile(m.id)}>{m.name}</button>
                       <b>{m.rating.toLocaleString()} AKTR</b>
                     </div>)}
-                    {!mockHomeClubRows.length&&<div className="mockRankEmpty">클럽 랭킹 기록이 없습니다.</div>}
+                    {!mockHomeClubRows.length&&<div className="mockRankEmpty">표시할 클럽회원이 없습니다.</div>}
                   </div>
                 </section>
               </article>
@@ -3810,15 +3809,15 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
         <section className="rankingCombinedCard">
           <div className="rankingTopBar">
             <div className="rankingTopTabs">
-              <button className="rankingTopTab active" type="button">WKTC 클럽 랭킹</button>
+              <button className="rankingTopTab active" type="button">WKTC 클럽회원</button>
             </div>
           </div>
 
           <div id="club-ranking-section" className="rankingSectionBlock singleRankingBlock rankingAnchorSection">
             <div className="rankingSectionHead">
-              <div><h3>클럽 랭킹 (통산) <span className="rankingInfo">ⓘ</span></h3></div>
+              <div><h3>클럽회원 <span className="rankingInfo">ⓘ</span></h3></div>
               <div className="rankingSectionMeta">
-                <b>기준: 글로벌 AKTR</b>
+                <b>정렬: 이름순</b>
                 <span>회원 {memberRanked.length}명</span>
               </div>
             </div>
@@ -3827,14 +3826,13 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
               <table>
                 <thead>
                   <tr>
-                    <th>순위</th><th>회원명</th><th>AKTR</th><th>승</th><th>패</th><th>승률</th><th>경기 수</th>
+                    <th>회원명</th><th>AKTR</th><th>승</th><th>패</th><th>승률</th><th>경기 수</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {(showAllClubRank?memberRanked:memberRanked.slice(0,6)).map((m,i)=>{
+                  {(showAllClubRank?memberRanked:memberRanked.slice(0,6)).map(m=>{
                     const n=m.wins+m.losses;
                     return <tr key={m.id}>
-                      <td><span className={`exactRank ${i===0?"gold":i===1?"silver":i===2?"bronze":""}`}>{i+1}</span></td>
                       <td className="memberCell"><button className="nameLink" onClick={()=>openProfile(m.id)}>{m.name}</button></td>
                       <td><b>{m.rating.toLocaleString()}</b></td>
                       <td>{m.wins}</td>
@@ -3849,7 +3847,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
 
             {memberRanked.length>6&&<div className="rankingMoreWrap">
               <button className="rankingMoreBtn" onClick={()=>setShowAllClubRank(v=>!v)}>
-                {showAllClubRank?"상위 6명만 보기":"전체 클럽 랭킹 보기"} <span>{showAllClubRank?"↑":"→"}</span>
+                {showAllClubRank?"처음 6명만 보기":"전체 클럽회원 보기"} <span>{showAllClubRank?"↑":"→"}</span>
               </button>
             </div>}
           </div>
@@ -4027,8 +4025,8 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
         <section className="surface padded rankingPrivacyPanel">
           <div className="sectionHead">
             <div>
-              <h2>클럽 랭킹 공개 설정</h2>
-              <small>WKTC 클럽 랭킹을 일반 방문자에게 공개할지 선택합니다.</small>
+              <h2>클럽회원 공개 설정</h2>
+              <small>WKTC 클럽회원 목록을 일반 방문자에게 공개할지 선택합니다.</small>
             </div>
             <span className={rankingPublic?"rankingPrivacyBadge public":"rankingPrivacyBadge private"}>
               {rankingPublic?"전체 공개":"비공개"}
@@ -4042,7 +4040,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
               onClick={()=>saveClubRankingVisibility(true)}
             >
               <b>전체 공개</b>
-              <span>로그인하지 않은 방문자도 홈 TOP5와 클럽 랭킹 메뉴를 볼 수 있습니다.</span>
+              <span>로그인하지 않은 방문자도 홈 클럽회원 목록과 클럽회원 메뉴를 볼 수 있습니다.</span>
             </button>
 
             <button
@@ -4051,7 +4049,7 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
               onClick={()=>saveClubRankingVisibility(false)}
             >
               <b>비공개</b>
-              <span>관리자만 홈 TOP5와 클럽 랭킹 페이지를 볼 수 있습니다.</span>
+              <span>관리자만 홈 클럽회원 목록과 클럽회원 페이지를 볼 수 있습니다.</span>
             </button>
           </div>
         </section>

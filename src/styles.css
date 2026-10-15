@@ -10969,3 +10969,23 @@ body:has(.wktcApp){background:#f7ede1 !important}
     display:block;
   }
 }
+
+
+/* =========================================================
+   V11.67 — WKTC CLUB MEMBER LIST (ALPHABETICAL, NOT RANKING)
+   ========================================================= */
+.wktcApp .mockRankRows.homeFive>div.clubMemberHomeRow{
+  grid-template-columns:minmax(0,1fr) auto!important;
+}
+.wktcApp .mockRankRows.homeFive>div.clubMemberHomeRow button{
+  grid-column:1!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+}
+.wktcApp .mockRankRows.homeFive>div.clubMemberHomeRow b{
+  grid-column:2!important;
+}
+.wktcApp .exactRankingTable table{
+  min-width:610px;
+}
