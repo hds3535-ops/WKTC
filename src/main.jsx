@@ -669,6 +669,9 @@ function App(){
   const[editMemberForm,setEditMemberForm]=useState({name:"",rating:1000,membership_status:"regular"});
   const[editingMatch,setEditingMatch]=useState(null);
   const[editScore,setEditScore]=useState({a:"",b:""});
+  const[editingDrawMatch,setEditingDrawMatch]=useState(null);
+  const[editDrawForm,setEditDrawForm]=useState({a1:"",a2:"",b1:"",b2:""});
+  const[editDrawBusy,setEditDrawBusy]=useState(false);
   const[otrSeedRows,setOtrSeedRows]=useState([]);
   const[otrSeedPreview,setOtrSeedPreview]=useState(null);
   const[otrRebuildLoading,setOtrRebuildLoading]=useState(false);
@@ -833,6 +836,21 @@ function App(){
   const avgRating=activeMembers.length?Math.round(activeMembers.reduce((s,m)=>s+m.rating,0)/activeMembers.length):0;
   const totalGames=Math.floor(members.reduce((s,m)=>s+m.wins+m.losses,0)/2);
   const memberMap=useMemo(()=>Object.fromEntries(members.map(m=>[m.id,m])),[members]);
+  const drawEditPickerMembers=useMemo(()=>{
+    const byId=new Map((pickerMembers||[]).map(m=>[m.id,m]));
+    if(editingDrawMatch){
+      [
+        editingDrawMatch.team_a_member_1,
+        editingDrawMatch.team_a_member_2,
+        editingDrawMatch.team_b_member_1,
+        editingDrawMatch.team_b_member_2
+      ].filter(Boolean).forEach(id=>{
+        const member=memberMap[id];
+        if(member&&!byId.has(id))byId.set(id,{...member,member_type:publicMemberType(member)});
+      });
+    }
+    return [...byId.values()].sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"ko",{sensitivity:"base"}));
+  },[pickerMembers,editingDrawMatch,memberMap,clubPublicStatuses,clubFoundationLoaded]);
   const sessionMap=useMemo(()=>Object.fromEntries(sessions.map(s=>[s.id,s])),[sessions]);
   const otrSeedPreviewMap=useMemo(()=>Object.fromEntries((otrSeedPreview?.members||[]).map(x=>[x.member_id,x])),[otrSeedPreview]);
   const currentSeason=useMemo(()=>seasons.find(x=>x.id===currentSeasonId)||seasons.find(x=>x.is_current)||null,[seasons,currentSeasonId]);
@@ -2689,6 +2707,101 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
   }
 
 
+  function openDrawPlayerEdit(match){
+    if(!isAdmin&&!memberUnlocked){
+      alert("대진 수정에는 회원 PIN 인증이 필요합니다.");
+      return;
+    }
+    if(match.winner||match.score_a!=null||match.score_b!=null){
+      alert("이미 결과가 입력된 경기는 대진 선수를 변경할 수 없습니다.");
+      return;
+    }
+
+    setEditingDrawMatch(match);
+    setEditDrawForm({
+      a1:match.team_a_member_1||"",
+      a2:match.team_a_member_2||"",
+      b1:match.team_b_member_1||"",
+      b2:match.team_b_member_2||""
+    });
+  }
+
+  async function saveDrawPlayerEdit(e){
+    e?.preventDefault();
+    if(!requireAdmin()||!editingDrawMatch)return;
+
+    if(editingDrawMatch.winner||editingDrawMatch.score_a!=null||editingDrawMatch.score_b!=null){
+      alert("이미 결과가 입력된 경기는 대진 선수를 변경할 수 없습니다.");
+      return;
+    }
+
+    const isSingles=editingDrawMatch.match_format==="singles";
+    const required=isSingles
+      ?[editDrawForm.a1,editDrawForm.b1]
+      :[editDrawForm.a1,editDrawForm.a2,editDrawForm.b1,editDrawForm.b2];
+
+    if(required.some(id=>!id)){
+      alert(isSingles?"양쪽 선수를 모두 선택해주세요.":"복식 4명의 선수를 모두 선택해주세요.");
+      return;
+    }
+
+    if(new Set(required).size!==required.length){
+      alert("한 경기 안에 같은 선수를 두 번 배정할 수 없습니다.");
+      return;
+    }
+
+    const payload={
+      team_a_member_1:editDrawForm.a1,
+      team_a_member_2:isSingles?null:editDrawForm.a2,
+      team_b_member_1:editDrawForm.b1,
+      team_b_member_2:isSingles?null:editDrawForm.b2
+    };
+
+    setEditDrawBusy(true);
+    let error=null;
+
+    if(isAdmin){
+      const result=await supabase
+        .from("matches")
+        .update(payload)
+        .eq("club_id",CURRENT_CLUB_ID)
+        .eq("id",editingDrawMatch.id);
+      error=result.error;
+    }else{
+      const result=await supabase.rpc("member_update_match_players_for_club",{
+        p_pin:memberPin,
+        p_club_id:CURRENT_CLUB_ID,
+        p_match_id:editingDrawMatch.id,
+        p_team_a_member_1:payload.team_a_member_1,
+        p_team_a_member_2:payload.team_a_member_2,
+        p_team_b_member_1:payload.team_b_member_1,
+        p_team_b_member_2:payload.team_b_member_2
+      });
+      error=result.error;
+    }
+
+    setEditDrawBusy(false);
+
+    if(error){
+      alert("대진 수정 실패: "+error.message);
+      return;
+    }
+
+    setMatches(prev=>prev.map(m=>{
+      if(m.id!==editingDrawMatch.id)return m;
+      return{
+        ...m,
+        ...payload,
+        a:[memberMap[payload.team_a_member_1],memberMap[payload.team_a_member_2]].filter(Boolean),
+        b:[memberMap[payload.team_b_member_1],memberMap[payload.team_b_member_2]].filter(Boolean)
+      };
+    }));
+
+    setEditingDrawMatch(null);
+    await loadHistory();
+    flash("대진 선수를 수정했습니다.");
+  }
+
   async function deletePendingMatch(match){
     if(!requireAdmin())return;
     if(match.winner||match.score_a!=null||match.score_b!=null){
@@ -3744,11 +3857,14 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
                   <label>B<input type="number" min="0" value={v.b} onChange={e=>setScoreInputs(s=>({...s,[key]:{...v,b:e.target.value}}))}/></label>
                   <button className="primary" onClick={()=>submitCurrentScore(m,i)}>결과 저장</button>
                 </div>
-                :<div className="pendingPermissionNote friendly">회원 PIN 인증 후 스코어 입력 가능</div>}
+                :<div className="pendingPermissionNote friendly">회원 PIN 인증 후 대진 수정 · 스코어 입력 가능</div>}
 
-              {isAdmin
-                ?<button className="cancelFriendlyBtn pendingDeleteBtn" onClick={()=>deletePendingMatch(m)}>경기 삭제</button>
-                :memberUnlocked&&<button className="cancelFriendlyBtn" onClick={()=>cancelFriendlyMatch(m)}>경기 취소 / 삭제</button>}
+              {(isAdmin||memberUnlocked)&&<div className="pendingAdminActions">
+                <button type="button" className="pendingEditDrawBtn" onClick={()=>openDrawPlayerEdit(m)}>대진 수정</button>
+                {isAdmin
+                  ?<button type="button" className="cancelFriendlyBtn pendingDeleteBtn" onClick={()=>deletePendingMatch(m)}>경기 삭제</button>
+                  :<button type="button" className="cancelFriendlyBtn" onClick={()=>cancelFriendlyMatch(m)}>경기 취소 / 삭제</button>}
+              </div>}
             </div>;
           })}</div>
         </section>}
@@ -4266,6 +4382,71 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
         <label>현재 AKTR<input type="number" value={editMemberForm.rating} disabled={!isSystemAdmin} onChange={e=>setEditMemberForm({...editMemberForm,rating:e.target.value})}/></label>
         {!isSystemAdmin&&<div className="membershipModalHint">글로벌 AKTR 수동 변경은 시스템 OWNER만 가능합니다. 클럽 관리자는 경기 결과를 통해서만 AKTR을 변경할 수 있습니다.</div>}
         <button className="primary wide">저장</button>
+      </form>
+    </Modal>}
+
+    {editingDrawMatch&&(isAdmin||memberUnlocked)&&<Modal onClose={()=>{if(!editDrawBusy)setEditingDrawMatch(null);}}>
+      <div className="modalHead">
+        <div>
+          <h2>대진 선수 수정</h2>
+          <p>
+            {sessionMap[editingDrawMatch.session_id]?.session_date||""}
+            {sessionMap[editingDrawMatch.session_id]?.start_time?` · ${String(sessionMap[editingDrawMatch.session_id].start_time).slice(0,5)}`:""}
+            {` · Round ${editingDrawMatch.round_no||1}${editingDrawMatch.court_no?` · Court ${editingDrawMatch.court_no}`:""}`}
+          </p>
+        </div>
+        <button type="button" disabled={editDrawBusy} onClick={()=>setEditingDrawMatch(null)}>×</button>
+      </div>
+
+      <form className="modalForm drawPlayerEditForm" onSubmit={saveDrawPlayerEdit}>
+        <div className="drawPlayerEditTeams">
+          <section className="drawPlayerEditTeam">
+            <span>TEAM A</span>
+            <PersonPicker
+              members={drawEditPickerMembers}
+              value={editDrawForm.a1}
+              onChange={id=>setEditDrawForm({...editDrawForm,a1:id})}
+              placeholder={editingDrawMatch.match_format==="singles"?"선수 A":"A 선수 1"}
+              showRating
+            />
+            {editingDrawMatch.match_format!=="singles"&&<PersonPicker
+              members={drawEditPickerMembers}
+              value={editDrawForm.a2}
+              onChange={id=>setEditDrawForm({...editDrawForm,a2:id})}
+              placeholder="A 선수 2"
+              showRating
+            />}
+          </section>
+
+          <b className="drawPlayerEditVs">VS</b>
+
+          <section className="drawPlayerEditTeam">
+            <span>TEAM B</span>
+            <PersonPicker
+              members={drawEditPickerMembers}
+              value={editDrawForm.b1}
+              onChange={id=>setEditDrawForm({...editDrawForm,b1:id})}
+              placeholder={editingDrawMatch.match_format==="singles"?"선수 B":"B 선수 1"}
+              showRating
+            />
+            {editingDrawMatch.match_format!=="singles"&&<PersonPicker
+              members={drawEditPickerMembers}
+              value={editDrawForm.b2}
+              onChange={id=>setEditDrawForm({...editDrawForm,b2:id})}
+              placeholder="B 선수 2"
+              showRating
+            />}
+          </section>
+        </div>
+
+        <div className="drawPlayerEditNotice">
+          경기 날짜 · 라운드 · 코트 · 단/복식 형식은 그대로 유지되고 선수만 교체됩니다.
+          이미 결과가 저장된 경기는 이 기능으로 수정할 수 없습니다.
+        </div>
+
+        <button className="primary wide" disabled={editDrawBusy}>
+          {editDrawBusy?"저장 중...":"대진 수정 저장"}
+        </button>
       </form>
     </Modal>}
 
