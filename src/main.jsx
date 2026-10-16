@@ -3860,7 +3860,15 @@ WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부�
                 :<div className="pendingPermissionNote friendly">회원 PIN 인증 후 대진 수정 · 스코어 입력 가능</div>}
 
               {(isAdmin||memberUnlocked)&&<div className="pendingAdminActions">
-                <button type="button" className="pendingEditDrawBtn" onClick={()=>openDrawPlayerEdit(m)}>대진 수정</button>
+                <button type="button" className="pendingEditDrawBtn" onClick={()=>openDrawPlayerEdit(m)}>
+                  <span className="drawEditIcon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false">
+                      <path d="M4.75 19.25h3.1L18.2 8.9a1.65 1.65 0 0 0 0-2.34l-.76-.76a1.65 1.65 0 0 0-2.34 0L4.75 16.15v3.1Z"/>
+                      <path d="m13.9 7 3.1 3.1"/>
+                    </svg>
+                  </span>
+                  <span>수정</span>
+                </button>
                 {isAdmin
                   ?<button type="button" className="cancelFriendlyBtn pendingDeleteBtn" onClick={()=>deletePendingMatch(m)}>경기 삭제</button>
                   :<button type="button" className="cancelFriendlyBtn" onClick={()=>cancelFriendlyMatch(m)}>경기 취소 / 삭제</button>}

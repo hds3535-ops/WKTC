@@ -10989,3 +10989,148 @@ body:has(.wktcApp){background:#f7ede1 !important}
 .wktcApp .exactRankingTable table{
   min-width:610px;
 }
+
+
+/* =========================================================
+   V11.69 — EDIT PLAYERS IN A PENDING DRAW
+   ========================================================= */
+.pendingAdminActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:8px;
+}
+.pendingAdminActions .pendingDeleteBtn,
+.pendingAdminActions .pendingEditDrawBtn{
+  width:100%;
+  margin:0!important;
+}
+.pendingEditDrawBtn{
+  border:1px solid #c7d4df;
+  border-radius:9px;
+  padding:9px 10px;
+  background:#fff;
+  color:#285d88;
+  font-size:10px;
+  font-weight:900;
+}
+.pendingEditDrawBtn:hover{
+  background:#f2f7fb;
+}
+.drawPlayerEditForm{
+  display:grid;
+  gap:15px;
+}
+.drawPlayerEditTeams{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr);
+  gap:12px;
+  align-items:center;
+}
+.drawPlayerEditTeam{
+  display:grid;
+  gap:8px;
+  min-width:0;
+  padding:14px;
+  border:1px solid #e0e6ec;
+  border-radius:13px;
+  background:#f8fafc;
+}
+.drawPlayerEditTeam>span{
+  color:#66798b;
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:.08em;
+}
+.drawPlayerEditVs{
+  text-align:center;
+  color:#8090a0;
+  font-size:11px;
+}
+.drawPlayerEditNotice{
+  padding:10px 12px;
+  border-radius:10px;
+  background:#f5f7f9;
+  color:#6f7e8e;
+  font-size:10px;
+  line-height:1.55;
+}
+
+@media(max-width:720px){
+  .pendingAdminActions{
+    grid-template-columns:1fr 1fr;
+  }
+  .drawPlayerEditTeams{
+    grid-template-columns:1fr;
+  }
+  .drawPlayerEditVs{
+    padding:0;
+  }
+}
+
+
+/* =========================================================
+   V11.72 — REFINED DRAW EDIT BUTTON
+   ========================================================= */
+.pendingAdminActions{
+  align-items:center;
+}
+.pendingAdminActions .pendingEditDrawBtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  min-height:36px;
+  padding:8px 12px;
+  border:1px solid rgba(112,126,140,.20);
+  border-radius:999px;
+  background:rgba(255,255,255,.82);
+  color:inherit;
+  font-size:10px;
+  font-weight:850;
+  line-height:1;
+  letter-spacing:-.01em;
+  box-shadow:0 1px 2px rgba(22,34,46,.04);
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease;
+}
+.pendingAdminActions .pendingEditDrawBtn:hover{
+  background:rgba(255,255,255,.98);
+  border-color:rgba(112,126,140,.34);
+  box-shadow:0 3px 10px rgba(22,34,46,.07);
+  transform:translateY(-1px);
+}
+.pendingAdminActions .pendingEditDrawBtn:active{
+  transform:translateY(0);
+  box-shadow:0 1px 2px rgba(22,34,46,.04);
+}
+.drawEditIcon{
+  display:inline-flex;
+  width:14px;
+  height:14px;
+  flex:0 0 14px;
+  opacity:.78;
+}
+.drawEditIcon svg{
+  width:100%;
+  height:100%;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.pendingAdminActions .pendingDeleteBtn,
+.pendingAdminActions .cancelFriendlyBtn{
+  min-height:36px;
+}
+
+@media(max-width:720px){
+  .pendingAdminActions .pendingEditDrawBtn{
+    min-height:38px;
+    padding:9px 12px;
+  }
+}
