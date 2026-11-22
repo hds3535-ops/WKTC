@@ -3684,7 +3684,7 @@ function App(){
               <button className={memberFilter==="all"?"filterBtn on":"filterBtn"} onClick={()=>setMemberFilter("all")}>전체</button>
             </div>
           </div>
-          <div className="tableWrap"><table className="memberAdminTable"><thead><tr><th>이름</th><th>상태</th><th>관리등급</th><th>성별</th><th>AKTR</th><th>승</th><th>패</th><th>승률</th>{isAdmin&&<th>개인 PIN</th>}{isAdmin&&<th></th>}</tr></thead><tbody>
+          <div className="tableWrap memberAdminWrap"><table className={isAdmin?"memberAdminTable memberAdminTableAdmin":"memberAdminTable memberAdminTablePublic"}><thead><tr><th>이름</th><th>상태</th><th>관리등급</th><th>성별</th><th>AKTR</th><th>승</th><th>패</th><th>승률</th>{isAdmin&&<th>개인 PIN</th>}{isAdmin&&<th></th>}</tr></thead><tbody>
             {filteredMembers.map(m=>{const n=m.wins+m.losses;return <tr key={m.id} className={m.active===false?"inactiveRow":""}>
               <td className="memberCell">
                 <button className="nameLink" onClick={()=>openProfile(m.id)}>{m.name}</button>

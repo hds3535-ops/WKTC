@@ -11278,3 +11278,202 @@ body:has(.wktcApp){background:#f7ede1 !important}
     flex-basis:100%;
   }
 }
+
+
+/* =========================================================
+   V11.79 — PC MEMBER LIST: NO HORIZONTAL SCROLL
+   Affects only the member-directory table at >=721px.
+   Mobile member views, other tables and chart scrolling are unchanged.
+   ========================================================= */
+@media (min-width:721px){
+  .memberAdminWrap{
+    width:100%;
+    min-width:0;
+    max-width:100%;
+    overflow-x:visible!important;
+  }
+  .memberAdminTable{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    table-layout:fixed;
+  }
+  .memberAdminTable th,
+  .memberAdminTable td{
+    box-sizing:border-box;
+    min-width:0!important;
+    padding:9px 5px;
+    font-size:12px;
+    overflow-wrap:break-word;
+  }
+  .memberAdminTable th{
+    font-size:11px;
+    white-space:normal;
+  }
+  .memberAdminTable .memberCell{
+    min-width:0;
+    max-width:100%;
+    flex-wrap:wrap;
+    white-space:normal;
+    gap:4px 6px;
+  }
+  .memberAdminTable .nameLink{
+    max-width:100%;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    word-break:keep-all;
+    text-align:left;
+  }
+  .memberAdminTable .championStarsAfter{
+    min-width:0;
+    max-width:100%;
+    flex-wrap:wrap;
+    margin-left:0;
+    font-size:13px;
+  }
+  .memberAdminTable .statusBadge{
+    padding:4px 5px;
+    font-size:10px;
+    white-space:nowrap;
+  }
+  .memberAdminTable .membershipAdminBadge{
+    min-width:0;
+    padding:4px 5px;
+    font-size:9px;
+  }
+  .memberAdminTable .clubAffiliationBadge{
+    padding:4px 5px;
+    font-size:9px;
+  }
+  .memberAdminTable .memberPinCell{
+    min-width:0;
+    max-width:100%;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:4px;
+    white-space:normal;
+  }
+  .memberAdminTable .memberPinStatus{
+    padding:3px 5px;
+    font-size:9px;
+  }
+  .memberAdminTable .memberPinEditBtn{
+    padding:4px 6px;
+    font-size:10px;
+  }
+  .memberAdminTable .rowActions{
+    width:100%;
+    min-width:0;
+    gap:5px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:flex-start;
+  }
+  .memberAdminTable .rowActions button{
+    min-width:0;
+    flex:0 1 auto;
+    padding:6px 8px;
+    font-size:10px;
+    white-space:nowrap;
+  }
+}
+/* Standard PC window: show every member field in one table without panning. */
+@media (min-width:1051px){
+  .memberAdminTableAdmin th:nth-child(1){width:16%}
+  .memberAdminTableAdmin th:nth-child(2){width:7%}
+  .memberAdminTableAdmin th:nth-child(3){width:8%}
+  .memberAdminTableAdmin th:nth-child(4){width:8%}
+  .memberAdminTableAdmin th:nth-child(5){width:5%}
+  .memberAdminTableAdmin th:nth-child(6){width:7%}
+  .memberAdminTableAdmin th:nth-child(7){width:4%}
+  .memberAdminTableAdmin th:nth-child(8){width:4%}
+  .memberAdminTableAdmin th:nth-child(9){width:6%}
+  .memberAdminTableAdmin th:nth-child(10){width:12%}
+  .memberAdminTableAdmin th:nth-child(11){width:23%}
+
+  .memberAdminTablePublic th:nth-child(1){width:24%}
+  .memberAdminTablePublic th:nth-child(2){width:10%}
+  .memberAdminTablePublic th:nth-child(3){width:11%}
+  .memberAdminTablePublic th:nth-child(4){width:12%}
+  .memberAdminTablePublic th:nth-child(5){width:7%}
+  .memberAdminTablePublic th:nth-child(6){width:10%}
+  .memberAdminTablePublic th:nth-child(7){width:7%}
+  .memberAdminTablePublic th:nth-child(8){width:7%}
+  .memberAdminTablePublic th:nth-child(9){width:12%}
+}
+/* Narrow PC window: readable fields within each member row instead of a wide table. */
+@media (min-width:721px) and (max-width:1050px){
+  .memberAdminTable{
+    display:block;
+    border-collapse:separate;
+  }
+  .memberAdminTable thead{display:none}
+  .memberAdminTable tbody{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:12px;
+  }
+  .memberAdminTable tbody tr{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:0;
+    min-width:0;
+    padding:8px 10px;
+    border:1px solid #e4e8ee;
+    border-radius:12px;
+    background:#fff;
+  }
+  .memberAdminTable td{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-start;
+    gap:5px;
+    min-width:0!important;
+    width:auto!important;
+    height:auto!important;
+    padding:9px 8px!important;
+    border-bottom:1px solid #edf0f3;
+    text-align:left!important;
+    overflow-wrap:anywhere;
+  }
+  .memberAdminTable td::before{
+    display:block;
+    font-size:10px;
+    font-weight:750;
+    line-height:1.25;
+    color:#667085;
+  }
+  .memberAdminTable td:nth-child(1)::before{content:"이름"}
+  .memberAdminTable td:nth-child(2)::before{content:"상태"}
+  .memberAdminTable td:nth-child(3)::before{content:"관리등급"}
+  .memberAdminTable td:nth-child(4)::before{content:"주 소속"}
+  .memberAdminTable td:nth-child(5)::before{content:"성별"}
+  .memberAdminTable td:nth-child(6)::before{content:"AKTR"}
+  .memberAdminTable td:nth-child(7)::before{content:"승"}
+  .memberAdminTable td:nth-child(8)::before{content:"패"}
+  .memberAdminTable td:nth-child(9)::before{content:"승률"}
+  .memberAdminTable td:nth-child(10)::before{content:"개인 PIN"}
+  .memberAdminTable td:nth-child(11)::before{content:"관리"}
+  .memberAdminTable td:first-child{
+    grid-column:1/-1;
+    flex-direction:row;
+    flex-wrap:wrap;
+    justify-content:flex-start;
+    align-items:center;
+    gap:10px;
+    padding-top:7px!important;
+    padding-bottom:10px!important;
+  }
+  .memberAdminTable td:first-child .nameLink{
+    font-size:14px;
+  }
+  .memberAdminTableAdmin td:last-child{
+    grid-column:1/-1;
+    border-bottom:0;
+  }
+  .memberAdminTablePublic td:nth-last-child(-n+2){border-bottom:0}
+  .memberAdminTableAdmin .rowActions{
+    width:100%;
+  }
+}
