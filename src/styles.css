@@ -11134,3 +11134,147 @@ body:has(.wktcApp){background:#f7ede1 !important}
     padding:9px 12px;
   }
 }
+
+
+/* =========================================================
+   V11.77 — FULL AKTR HISTORY GRAPH
+   ========================================================= */
+.fullHistoryChart{min-width:0}
+.chartScroll{
+  width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding-bottom:4px;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+}
+.chartScroll svg{
+  display:block;
+  max-width:none!important;
+  max-height:none!important;
+  height:250px!important;
+}
+.chartMonthLabel{
+  fill:#7b8490;
+  font-size:10px;
+  font-weight:700;
+}
+.monthTickLine{
+  stroke:#cfd6de;
+  stroke-width:1;
+}
+.chartHistoryMeta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:7px 0 10px;
+  color:#7a8490;
+}
+.chartHistoryMeta span{
+  font-size:10px;
+  font-weight:850;
+}
+.chartHistoryMeta small{
+  font-size:9px;
+  text-align:right;
+}
+.fullHistoryChart .eventChips{margin-top:2px}
+
+@media(max-width:720px){
+  .chartScroll svg{height:230px!important}
+  .chartHistoryMeta{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:3px;
+  }
+  .chartHistoryMeta small{text-align:left}
+}
+
+
+/* =========================================================
+   V11.77 — MEMBER ADMIN ACTION VISIBILITY
+   ========================================================= */
+.memberAdminTable th:last-child,
+.memberAdminTable td:last-child{
+  min-width:230px;
+}
+.memberAdminTable .rowActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  align-items:center;
+  min-width:210px;
+}
+.memberAdminTable .rowActions button{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+.memberAdminTable .hardDeleteBtn{
+  min-width:72px;
+}
+
+@media(max-width:720px){
+  .memberAdminTable th:last-child,
+  .memberAdminTable td:last-child{
+    min-width:220px;
+  }
+}
+
+
+/* =========================================================
+   V11.78 — AKTR GRAPH WHEEL / PINCH ZOOM
+   ========================================================= */
+.chartZoomBar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:30px;
+  margin-bottom:4px;
+  color:#667085;
+}
+.chartZoomBar span{
+  font-size:10px;
+  font-weight:850;
+  color:#475467;
+  white-space:nowrap;
+}
+.chartZoomBar small{
+  flex:1;
+  font-size:9px;
+  line-height:1.35;
+}
+.chartZoomBar button{
+  flex:0 0 auto;
+  border:1px solid #d9e0e7;
+  background:#fff;
+  color:#475467;
+  border-radius:999px;
+  padding:5px 9px;
+  font-size:9px;
+  font-weight:800;
+  cursor:pointer;
+}
+.zoomableChart{
+  overscroll-behavior:contain;
+  touch-action:pan-x pan-y;
+  cursor:zoom-in;
+}
+.zoomableChart:active{
+  cursor:grabbing;
+}
+.fullHistoryChart .chartScroll svg{
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+@media(max-width:720px){
+  .chartZoomBar{
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:4px 8px;
+  }
+  .chartZoomBar small{
+    flex-basis:100%;
+  }
+}

@@ -1,4 +1,4 @@
-import React,{useEffect,useMemo,useState}from"react";
+import React,{useEffect,useMemo,useRef,useState}from"react";
 import{createRoot}from"react-dom/client";
 import{supabase,supabaseConfigStatus}from"./lib/supabase";
 import"./styles.css";
@@ -3684,7 +3684,7 @@ function App(){
               <button className={memberFilter==="all"?"filterBtn on":"filterBtn"} onClick={()=>setMemberFilter("all")}>전체</button>
             </div>
           </div>
-          <div className="tableWrap"><table><thead><tr><th>이름</th><th>상태</th><th>관리등급</th><th>성별</th><th>AKTR</th><th>승</th><th>패</th><th>승률</th>{isAdmin&&<th>개인 PIN</th>}{isAdmin&&<th></th>}</tr></thead><tbody>
+          <div className="tableWrap"><table className="memberAdminTable"><thead><tr><th>이름</th><th>상태</th><th>관리등급</th><th>성별</th><th>AKTR</th><th>승</th><th>패</th><th>승률</th>{isAdmin&&<th>개인 PIN</th>}{isAdmin&&<th></th>}</tr></thead><tbody>
             {filteredMembers.map(m=>{const n=m.wins+m.losses;return <tr key={m.id} className={m.active===false?"inactiveRow":""}>
               <td className="memberCell">
                 <button className="nameLink" onClick={()=>openProfile(m.id)}>{m.name}</button>
@@ -3707,7 +3707,7 @@ function App(){
                 {m.active===false
                   ?<>
                     <button className="restoreBtn" onClick={()=>reactivateMember(m.id)}>활동 복구</button>
-                    <button className="hardDeleteBtn" onClick={()=>permanentlyDeleteInactiveMember(m.id)}>목록삭제</button>
+                    <button className="hardDeleteBtn" onClick={()=>permanentlyDeleteInactiveMember(m.id)}>목록 삭제</button>
                    </>
                   :<button className="danger" onClick={()=>deactivateMember(m.id)}>비활성화</button>}
               </div></td>}
@@ -4769,17 +4769,11 @@ function MemberProfile({member,matches,sessions,memberMap,events,seasons,onOpenP
     if(ac!==bc)return ac.localeCompare(bc);
     return String(a.id||"").localeCompare(String(b.id||""));
   }
-  const graphStartDate="2026-08-16";
   const memberEvents=events
     .filter(e=>{
       if(e.member_id!==member.id)return false;
 
-      // 그래프만 2026-08-16 이후 기록을 표시.
-      // 경기 전적/승패/시즌 기록/AKTR 현재값에는 영향을 주지 않음.
-      const graphDate=eventDateKey(e).slice(0,10);
-      if(!graphDate||graphDate<graphStartDate)return false;
-
-      // 관리자 수동 AKTR 조정도 시작일 이후 기록만 그래프에 표시.
+      // 관리자 수동 AKTR 조정도 전체 기록에 포함.
       if(e.event_type==="manual")return true;
 
       // 경기 AKTR 변화는 실제 결과가 확정된 경기만 표시.
@@ -4890,7 +4884,7 @@ function MemberProfile({member,matches,sessions,memberMap,events,seasons,onOpenP
     </section>
 
     <section className="surface padded">
-      <div className="sectionHead"><h2>AKTR 변화 그래프</h2><span>2026-08-16 이후 · 실제 AKTR 증감 기준</span></div>
+      <div className="sectionHead"><h2>AKTR 변화 그래프</h2><span>전체 기록 · 실제 AKTR 증감 기준</span></div>
       <OtrChart
         events={memberEvents.map(e=>{
           const match=e.match_id?matchById[e.match_id]:null;
@@ -5027,24 +5021,157 @@ function MemberProfile({member,matches,sessions,memberMap,events,seasons,onOpenP
   </>;
 }
 function OtrChart({events,current}){
-  const points=events.slice(-20);
+  const points=[...(events||[])];
+  const scrollRef=useRef(null);
+  const[chartZoom,setChartZoom]=useState(1);
+  const[viewportWidth,setViewportWidth]=useState(760);
+  const zoomRef=useRef(1);
+  const pinchRef=useRef({
+    active:false,
+    startDistance:0,
+    startZoom:1,
+    anchorRatio:.5,
+    localX:0
+  });
+
+  useEffect(()=>{zoomRef.current=chartZoom},[chartZoom]);
+
+  useEffect(()=>{
+    const el=scrollRef.current;
+    if(!el)return;
+
+    const updateViewport=()=>{
+      const next=Math.max(320,Math.floor(el.clientWidth||760));
+      setViewportWidth(next);
+    };
+
+    updateViewport();
+
+    if(typeof ResizeObserver!=="undefined"){
+      const observer=new ResizeObserver(updateViewport);
+      observer.observe(el);
+      return()=>observer.disconnect();
+    }
+
+    window.addEventListener("resize",updateViewport);
+    return()=>window.removeEventListener("resize",updateViewport);
+  },[]);
+
+  useEffect(()=>{
+    // 회원을 바꾸거나 새 AKTR 기록이 들어오면 다시 전체 보기에서 시작한다.
+    setChartZoom(1);
+    zoomRef.current=1;
+    const el=scrollRef.current;
+    if(el)el.scrollLeft=0;
+  },[points.length,current]);
+
+  const clampZoom=value=>Math.max(1,Math.min(6,value));
+
+  useEffect(()=>{
+    const el=scrollRef.current;
+    if(!el)return;
+
+    function applyZoom(nextZoom,clientX){
+      const currentZoom=zoomRef.current;
+      const clamped=clampZoom(nextZoom);
+      if(Math.abs(clamped-currentZoom)<.001)return;
+
+      const rect=el.getBoundingClientRect();
+      const localX=Math.max(0,Math.min(el.clientWidth,clientX-rect.left));
+      const currentContentWidth=Math.max(el.clientWidth,viewportWidth*currentZoom);
+      const anchorContentX=el.scrollLeft+localX;
+      const anchorRatio=currentContentWidth>0?anchorContentX/currentContentWidth:.5;
+
+      zoomRef.current=clamped;
+      setChartZoom(clamped);
+
+      requestAnimationFrame(()=>{
+        const newContentWidth=Math.max(el.clientWidth,viewportWidth*clamped);
+        const nextScroll=anchorRatio*newContentWidth-localX;
+        el.scrollLeft=Math.max(0,Math.min(newContentWidth-el.clientWidth,nextScroll));
+      });
+    }
+
+    function onWheel(e){
+      if(!points.length)return;
+      e.preventDefault();
+
+      // 휠 위 = 확대, 휠 아래 = 축소.
+      const direction=e.deltaY<0?1:-1;
+      const factor=direction>0?1.16:(1/1.16);
+      applyZoom(zoomRef.current*factor,e.clientX);
+    }
+
+    function distance(t1,t2){
+      const dx=t2.clientX-t1.clientX;
+      const dy=t2.clientY-t1.clientY;
+      return Math.hypot(dx,dy);
+    }
+
+    function onTouchStart(e){
+      if(e.touches.length!==2)return;
+      const d=distance(e.touches[0],e.touches[1]);
+      if(!d)return;
+
+      const rect=el.getBoundingClientRect();
+      const centerX=(e.touches[0].clientX+e.touches[1].clientX)/2;
+      const localX=Math.max(0,Math.min(el.clientWidth,centerX-rect.left));
+      const contentWidth=Math.max(el.clientWidth,viewportWidth*zoomRef.current);
+
+      pinchRef.current={
+        active:true,
+        startDistance:d,
+        startZoom:zoomRef.current,
+        anchorRatio:contentWidth>0?(el.scrollLeft+localX)/contentWidth:.5,
+        localX
+      };
+    }
+
+    function onTouchMove(e){
+      if(e.touches.length!==2||!pinchRef.current.active)return;
+      e.preventDefault();
+
+      const d=distance(e.touches[0],e.touches[1]);
+      if(!d||!pinchRef.current.startDistance)return;
+
+      const next=clampZoom(
+        pinchRef.current.startZoom*(d/pinchRef.current.startDistance)
+      );
+
+      zoomRef.current=next;
+      setChartZoom(next);
+
+      requestAnimationFrame(()=>{
+        const contentWidth=Math.max(el.clientWidth,viewportWidth*next);
+        const nextScroll=
+          pinchRef.current.anchorRatio*contentWidth-pinchRef.current.localX;
+        el.scrollLeft=Math.max(0,Math.min(contentWidth-el.clientWidth,nextScroll));
+      });
+    }
+
+    function onTouchEnd(e){
+      if(e.touches.length<2)pinchRef.current.active=false;
+    }
+
+    el.addEventListener("wheel",onWheel,{passive:false});
+    el.addEventListener("touchstart",onTouchStart,{passive:true});
+    el.addEventListener("touchmove",onTouchMove,{passive:false});
+    el.addEventListener("touchend",onTouchEnd,{passive:true});
+    el.addEventListener("touchcancel",onTouchEnd,{passive:true});
+
+    return()=>{
+      el.removeEventListener("wheel",onWheel);
+      el.removeEventListener("touchstart",onTouchStart);
+      el.removeEventListener("touchmove",onTouchMove);
+      el.removeEventListener("touchend",onTouchEnd);
+      el.removeEventListener("touchcancel",onTouchEnd);
+    };
+  },[points.length,viewportWidth]);
 
   if(!points.length){
     return <div className="chartEmpty"><b>{current} AKTR</b><span>아직 AKTR 변화 기록이 없습니다.</span></div>;
   }
 
-  /*
-   * Important:
-   * The old graph trusted every stored rating_before/rating_after value.
-   * If an older result had been edited/reversed, those historical snapshots
-   * could become non-contiguous even though each event's delta was correct.
-   *
-   * Rebuild the line from the actual event deltas and anchor the LAST point
-   * to the member's current AKTR. This guarantees:
-   * - +delta always moves upward
-   * - -delta always moves downward
-   * - the final point is exactly the current AKTR shown on the profile
-   */
   const deltas=points.map(e=>Number(e.delta||0));
   const reconstructed=[0];
   for(const d of deltas)reconstructed.push(reconstructed[reconstructed.length-1]+d);
@@ -5054,26 +5181,116 @@ function OtrChart({events,current}){
 
   const min=Math.min(...values),max=Math.max(...values);
   const spread=Math.max(20,max-min);
-  const w=760,h=220,pad=30;
+
+  // 기본 zoom=1이면 전체 기록이 현재 화면 폭 안에 한 번에 들어온다.
+  // 사용자가 확대할 때만 SVG 폭이 넓어져 좌우 이동이 생긴다.
+  const w=Math.max(320,Math.round(viewportWidth*chartZoom));
+  const h=250;
+  const padX=40;
+  const padTop=34;
+  const padBottom=48;
 
   const coords=values.map((v,i)=>{
-    const x=pad+(i/(Math.max(1,values.length-1)))*(w-pad*2);
+    const x=padX+(i/(Math.max(1,values.length-1)))*(w-padX*2);
     const low=min-(spread*.1);
     const high=min+spread*1.2;
-    const y=h-pad-((v-low)/(high-low))*(h-pad*2);
-    return[x,Math.max(pad,Math.min(h-pad,y))];
+    const y=h-padBottom-((v-low)/(high-low))*(h-padTop-padBottom);
+    return[x,Math.max(padTop,Math.min(h-padBottom,y))];
   });
 
   const poly=coords.map(p=>p.join(",")).join(" ");
 
-  return <div className="chartWrap">
-    <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`현재 AKTR ${current}. 최근 AKTR 변화`}>
-      <line x1={pad} y1={h-pad} x2={w-pad} y2={h-pad} className="axis"/>
-      <polyline points={poly} fill="none" className="otrLine"/>
-      {coords.map((p,i)=><circle key={i} cx={p[0]} cy={p[1]} r="4" className="otrDot"/>)}
-      <text x={pad} y="20" className="chartLabel">최고 {max}</text>
-      <text x={w-pad} y="20" textAnchor="end" className="chartLabel">현재 {current}</text>
-    </svg>
+  function eventDate(e){
+    const raw=String(e?.display_date||e?.created_at||"").slice(0,10);
+    return /^\d{4}-\d{2}-\d{2}$/.test(raw)?raw:"";
+  }
+
+  const rawMonthTicks=[];
+  let lastMonth="";
+  points.forEach((e,eventIndex)=>{
+    const date=eventDate(e);
+    const month=date?date.slice(0,7):"";
+    if(month&&month!==lastMonth){
+      const coordIndex=Math.min(eventIndex+1,coords.length-1);
+      rawMonthTicks.push({
+        month,
+        x:coords[coordIndex]?.[0]??padX
+      });
+      lastMonth=month;
+    }
+  });
+
+  // 전체 보기에서는 월 글자가 겹치지 않도록 자동으로 간격을 띄우고,
+  // 확대할수록 더 많은 월 표시가 자연스럽게 나타난다.
+  const minLabelGap=chartZoom>=3?44:chartZoom>=2?58:72;
+  const monthTicks=[];
+  let lastX=-Infinity;
+  rawMonthTicks.forEach((tick,index)=>{
+    const isLast=index===rawMonthTicks.length-1;
+    if(tick.x-lastX>=minLabelGap||isLast){
+      monthTicks.push(tick);
+      lastX=tick.x;
+    }
+  });
+
+  return <div className="chartWrap fullHistoryChart">
+    <div className="chartZoomBar">
+      <span>전체 보기 {chartZoom===1?"":"· "+Math.round(chartZoom*100)+"%"}</span>
+      <small>PC: 그래프 위 마우스 휠 · 모바일: 두 손가락 확대/축소</small>
+      {chartZoom>1&&<button type="button" onClick={()=>{
+        zoomRef.current=1;
+        setChartZoom(1);
+        if(scrollRef.current)scrollRef.current.scrollLeft=0;
+      }}>전체 보기</button>}
+    </div>
+
+    <div className="chartScroll zoomableChart" ref={scrollRef}>
+      <svg
+        viewBox={`0 0 ${w} ${h}`}
+        style={{width:`${w}px`,minWidth:`${w}px`}}
+        role="img"
+        aria-label={`현재 AKTR ${current}. 전체 AKTR 변화 기록`}
+      >
+        <line x1={padX} y1={h-padBottom} x2={w-padX} y2={h-padBottom} className="axis"/>
+        <polyline points={poly} fill="none" className="otrLine"/>
+
+        {coords.map((p,i)=><circle
+          key={i}
+          cx={p[0]}
+          cy={p[1]}
+          r={i===coords.length-1?"4.5":"3.6"}
+          className="otrDot"
+        />)}
+
+        <text x={padX} y="20" className="chartLabel">최고 {max}</text>
+        <text x={w-padX} y="20" textAnchor="end" className="chartLabel">현재 {current}</text>
+
+        {monthTicks.map(t=><g key={`${t.month}-${t.x}`}>
+          <line
+            x1={t.x}
+            y1={h-padBottom}
+            x2={t.x}
+            y2={h-padBottom+5}
+            className="monthTickLine"
+          />
+          <text
+            x={t.x}
+            y={h-18}
+            textAnchor="middle"
+            className="chartMonthLabel"
+          >
+            {t.month}
+          </text>
+        </g>)}
+      </svg>
+    </div>
+
+    <div className="chartHistoryMeta">
+      <span>총 {points.length}개 AKTR 변화 기록</span>
+      <small>{chartZoom===1
+        ?"현재 전체 기록을 한 화면에 표시하고 있습니다."
+        :"확대 상태에서는 좌우로 움직여 세부 기록을 볼 수 있습니다."}</small>
+    </div>
 
     <div className="eventChips">
       {points.slice(-8).map(e=><span key={e.id} className={Number(e.delta)>=0?"plus":"minus"}>
