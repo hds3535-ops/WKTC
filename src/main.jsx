@@ -731,6 +731,7 @@ function App(){
   const[globalPlayerSearch,setGlobalPlayerSearch]=useState("");
   const[globalPlayerResults,setGlobalPlayerResults]=useState([]);
   const[globalPlayerSearchBusy,setGlobalPlayerSearchBusy]=useState(false);
+  const[hiddenClubMemberIds,setHiddenClubMemberIds]=useState([]);
   const[transactionForm,setTransactionForm]=useState({type:"expense",date:new Date().toISOString().slice(0,10),category:"코트비",amount:"",note:""});
   const[clubEvents,setClubEvents]=useState(initialPublicCache?.clubEvents||[]);
   const[eventForm,setEventForm]=useState({id:null,date:new Date().toISOString().slice(0,10),title:"",details:""});
@@ -756,7 +757,12 @@ function App(){
   const nav=isAdmin
     ?ADMIN_NAV
     :PUBLIC_NAV.filter(x=>x[0]!=="ranking"||rankingPublic);
-  const activeMembers=useMemo(()=>members.filter(m=>m.active!==false),[members]);
+  const hiddenClubMemberIdSet=useMemo(()=>new Set(hiddenClubMemberIds||[]),[hiddenClubMemberIds]);
+  const siteVisibleMembers=useMemo(
+    ()=>members.filter(m=>!hiddenClubMemberIdSet.has(m.id)),
+    [members,hiddenClubMemberIdSet]
+  );
+  const activeMembers=useMemo(()=>siteVisibleMembers.filter(m=>m.active!==false),[siteVisibleMembers]);
   const clubMap=useMemo(()=>Object.fromEntries((clubs||[]).map(c=>[c.id,c])),[clubs]);
 
   const membershipsByMember=useMemo(()=>{
@@ -820,11 +826,11 @@ function App(){
     return others.length?`${base} +${others.length}`:base;
   }
 
-  const inactiveMembers=useMemo(()=>members.filter(m=>m.active===false),[members]);
+  const inactiveMembers=useMemo(()=>siteVisibleMembers.filter(m=>m.active===false),[siteVisibleMembers]);
   const filteredMembers=useMemo(()=>{
-    const src=memberFilter==="all"?members:memberFilter==="inactive"?inactiveMembers:activeMembers;
+    const src=memberFilter==="all"?siteVisibleMembers:memberFilter==="inactive"?inactiveMembers:activeMembers;
     return [...src].sort((a,b)=>b.rating-a.rating);
-  },[members,activeMembers,inactiveMembers,memberFilter]);
+  },[siteVisibleMembers,activeMembers,inactiveMembers,memberFilter]);
   const ranked=useMemo(()=>[...activeMembers].sort((a,b)=>b.rating-a.rating),[activeMembers]);
   const memberRanked=useMemo(()=>activeMembers
     .filter(m=>publicMemberType(m)==="member")
@@ -1024,7 +1030,7 @@ function App(){
 
   useEffect(()=>{
     if(!supabase||!authReady)return;
-    Promise.all([loadMembers(),loadHistory(),loadClubEvents(),loadClubPromo(),loadClubFoundation()]).catch(err=>console.error("화면 최신화 실패",err));
+    Promise.all([loadMembers(),loadHiddenClubMembers(),loadHistory(),loadClubEvents(),loadClubPromo(),loadClubFoundation()]).catch(err=>console.error("화면 최신화 실패",err));
     if(tab==="accounting"&&(isAdmin||memberUnlocked))loadFinance();
   },[tab,authReady,isAdmin,memberUnlocked]);
 
@@ -1375,6 +1381,16 @@ function App(){
     });
     if(error)throw error;
     return data;
+  }
+
+  async function loadHiddenClubMembers(){
+    if(!supabase)return;
+    const{data,error}=await supabase.rpc("club_site_hidden_member_ids",{p_club_id:CURRENT_CLUB_ID});
+    if(error){
+      console.error("숨김 회원 목록 불러오기 실패",error);
+      return;
+    }
+    setHiddenClubMemberIds((data||[]).map(x=>x.member_id));
   }
 
   async function loadMembers(){
@@ -2261,7 +2277,7 @@ function App(){
       alert("공용 선수 검색 실패: "+error.message);
       return;
     }
-    const localIds=new Set(members.map(m=>m.id));
+    const localIds=new Set(siteVisibleMembers.map(m=>m.id));
     setGlobalPlayerResults((data||[]).filter(x=>!localIds.has(x.member_id)));
   }
 
@@ -2278,7 +2294,18 @@ function App(){
       alert(`${label} 등록 실패: `+error.message);
       return;
     }
-    await Promise.all([loadMembers(),loadClubFoundation()]);
+
+    const{error:unhideError}=await supabase.rpc("admin_set_club_site_member_hidden",{
+      p_club_id:CURRENT_CLUB_ID,
+      p_member_id:player.member_id,
+      p_hidden:false
+    });
+    if(unhideError){
+      alert("회원은 등록됐지만 클럽 사이트 숨김 해제에 실패했습니다: "+unhideError.message);
+      return;
+    }
+
+    await Promise.all([loadMembers(),loadHiddenClubMembers(),loadClubFoundation()]);
     setGlobalPlayerResults(rows=>rows.filter(x=>x.member_id!==player.member_id));
     flash(`${player.name} 선수를 WKTC ${label}으로 연결했습니다.`);
   }
@@ -2389,23 +2416,25 @@ function App(){
     const member=members.find(m=>m.id===id);
     if(!member||member.active!==false)return;
 
-    if(!confirm(`${member.name}을(를) WKTC 선수 목록에서 제거할까요?
+    if(!confirm(`${member.name}을(를) WKTC 회원 목록에서 숨길까요?
 
-공용 선수 DB 자체는 삭제하지 않습니다.
-다른 클럽의 소속, 글로벌 AKTR, 다른 클럽 경기 기록은 그대로 유지됩니다.
-WKTC 과거 기록이 있는 선수는 기록 보존을 위해 제거가 거부됩니다.`))return;
+이 작업은 공용 선수 DB에서 선수를 삭제하지 않습니다.
+기존 WKTC 경기기록 · 글로벌 AKTR · 다른 클럽 소속/기록도 그대로 유지됩니다.
+나중에 다시 방문하면 공용 선수 DB 검색에서 찾아 WKTC 회원/게스트로 다시 추가할 수 있습니다.`))return;
 
-    const{error}=await supabase.rpc("admin_remove_player_from_club",{
+    const{error}=await supabase.rpc("admin_set_club_site_member_hidden",{
+      p_club_id:CURRENT_CLUB_ID,
       p_member_id:id,
-      p_club_id:CURRENT_CLUB_ID
+      p_hidden:true
     });
     if(error){
-      alert("목록 제거 실패: "+error.message);
+      alert("WKTC 목록 숨김 실패: "+error.message);
       return;
     }
 
-    await Promise.all([loadMembers(),loadClubFoundation()]);
-    flash("WKTC 선수 목록에서 제거했습니다. 공용 선수 데이터는 유지됩니다.");
+    setSelected(x=>x.filter(v=>v!==id));
+    await Promise.all([loadHiddenClubMembers(),loadClubFoundation()]);
+    flash("WKTC 회원 목록에서 숨겼습니다. 공용 선수 DB와 과거 기록은 그대로 유지됩니다.");
   }
 
   function startEditMember(member){
